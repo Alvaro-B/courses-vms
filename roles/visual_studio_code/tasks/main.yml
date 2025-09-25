@@ -1,12 +1,23 @@
----
-# tasks file for visual_studio_code Linux
+##################################
+#   _     ___ _   _ _   ___  __  #
+#  | |   |_ _| \ | | | | \ \/ /  #
+#  | |    | ||  \| | | | |\  /   #
+#  | |___ | || |\  | |_| |/  \   #
+#  |_____|___|_| \_|\___//_/\_\  #
+################################## 
 - block:
   - import_tasks: add-code-repository.yml
   - import_tasks: install-visual-studio-code.yml
   when: 
   - ansible_windows_domain is undefined
   
-# Install Visual Studio Code for Windows
+#######################################################
+#  __        _____ _   _ ____   _____        ______   #
+#  \ \      / /_ _| \ | |  _ \ / _ \ \      / / ___|  #
+#   \ \ /\ / / | ||  \| | | | | | | \ \ /\ / /\___ \  #
+#    \ V  V /  | || |\  | |_| | |_| |\ V  V /  ___) | #
+#     \_/\_/  |___|_| \_|____/ \___/  \_/\_/  |____/  #
+#######################################################
 - name: Installing Visual Studio Code for Windows
   win_chocolatey:
     name: vscode

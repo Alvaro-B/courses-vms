@@ -8,43 +8,44 @@
 
 - name: Install and configure basics for Linux
   block:
-    - import_tasks: linux-modify-repository-url.yml
-      when:
-        change_mirror 
+    - import_tasks: linux-tasks/modify-repository-url.yml
+      when: change_mirror 
 
     - name: test default graphical distro
       shell: systemctl get-default
       register: default_runlevel
       changed_when: false
 
-    - import_tasks: linux-common.yml
+    - import_tasks: linux-tasks/common.yml
 
-    - import_tasks: linux-disable-lock-screen.yml
+    - import_tasks: linux-tasks/disable-lock-screen.yml
 
-    - import_tasks: linux-terminal-shortcuts.yml
+    - import_tasks: linux-tasks/remove-plymouth.yml
 
-    - import_tasks: linux-users.yml
+    - import_tasks: linux-tasks/terminal-shortcuts.yml
 
-    - import_tasks: linux-lang.yml
+    - import_tasks: linux-tasks/users.yml
+
+    - import_tasks: linux-tasks/lang.yml
       when: ansible_distribution == 'CentOS'
 
-    - import_tasks: linux-timezone.yml
+    - import_tasks: linux-tasks/timezone.yml
       when: ansible_distribution == 'CentOS'
 
-    - import_tasks: linux-remove-keyring.yml
+    - import_tasks: linux-tasks/remove-keyring.yml
       when: ansible_distribution == 'Fedora'
 
-    - import_tasks: linux-install-desktop-environment.yml
+    - import_tasks: linux-tasks/install-desktop-environment.yml
       when: 
         - ansible_distribution == 'CentOS'
         - default_runlevel.stdout == 'graphical.target'
 
-    - import_tasks: linux-disable-zram.yml
+    - import_tasks: linux-tasks/disable-zram.yml
 
-    - import_tasks: linux-locale-and-keyboard-settings.yml
+    - import_tasks: linux-tasks/locale-and-keyboard-settings.yml
       when: ansible_distribution == 'Fedora' and ansible_distribution_major_version == '37'
 
-    - import_tasks: linux-disable-autorun-aplications-on-login.yml
+    - import_tasks: linux-tasks/disable-autorun-aplications-on-login.yml
       when: ansible_distribution == 'Fedora' 
 
   when:
@@ -60,13 +61,13 @@
 
 - name: Windows common
   block:
-    - import_tasks: windows-license.yml
-    - import_tasks: windows-disable-automatic-updates.yml
-    - import_tasks: windows-disable-pass-complexity.yml
-    - import_tasks: windows-user.yml
+    - import_tasks: windows-tasks/license.yml
+    - import_tasks: windows-tasks/disable-automatic-updates.yml
+    - import_tasks: windows-tasks/disable-pass-complexity.yml
+    - import_tasks: windows-tasks/user.yml
     - name: Reboot and loggin as {{base_username}}
       win_reboot:
-    - import_tasks: windows-firewall.yml
-    - import_tasks: windows-common-sw.yml
+    - import_tasks: windows-tasks/firewall.yml
+    - import_tasks: windows-tasks/common-sw.yml
   when: 
     - ansible_windows_domain is defined

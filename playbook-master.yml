@@ -3,18 +3,20 @@
   hosts: all
   become: true
   vars:
-    # Nombre usuario
+    # USUARIO
     base_username: alumno
+    shell: "zsh"
 
     # Extra software
     extras:
-      - cmake
-      - gcc-c++
+      - terminator
 
     # Definir SW máquina
-    common_conf: yes 
-    browsers: yes 
-    vsc: yes 
+    common_conf: no 
+    oh_my_zsh: yes
+    browsers: yes
+    vsc: yes
+
     nodejs: no 
     docker: no
     eclipse: no
@@ -25,7 +27,7 @@
     copy_workspace: no
     rdp: no 
 
-    # Versiones
+    # Versións
     java_main_version: 21
     docker_compose_version: v2.39.4
     eclipse_rel: '2025-03'
@@ -36,17 +38,9 @@
     tomcat_version: 9.0.84
     tomcat_major_version: 9
 
-  tasks:
-    - name: Desisntalar plymouth
-      dnf:
-        name: plymouth*
-        state: absent
-      when: 
-        - ansible_distribution_major_version == '41'
-        - ansible_distribution == 'Fedora'
-
+  tasks:   
     # Este rol es obligatorio para para firewall, selinux e instalar software básico para los cursos
-    - name: Configuración comun
+    - name: Configuración común
       include_role:
         name: common
       vars:
@@ -57,6 +51,7 @@
         # {{ mirror }}/releases/$releasever/Everything/$basearch/os/
         mirror: https://fr2.rpmfind.net/linux/fedora/linux 
         username: "{{ base_username }}"
+        user_shell: "{{ shell }}"
         # Opciones: [ enforcing | permissive | disabled ]
         # Si no definimos la variable, se considera disabled.
         common_selinux_state: disabled
@@ -64,19 +59,26 @@
         # el área de intercambio en la distribución Fedora
         disable_zram: false
         # Variable opcional para cursos que necesiten paquetes de instalación especiales
-        extra_software: []
+        extra_software: "{{ extras }}"
         # Variable para no desinstalar gnome-keyring, por defecto a true
         disable_keyring: yes
       when: common_conf 
+    
+    - name: Instala Oh-My-Zsh
+      include_role: 
+        name: oh-my-zsh
+      vars:
+        username: "{{ base_username }}"
+      when: oh_my_zsh
 
     - block:
-        - name: Instalación de Firefox
+        - name: Instala Firefox
           include_role:
             name: firefox
           vars:
-            browser_configuration_files: no # Configuracion personalizada del navegador
+            browser_configuration_files: no 
         
-        - name: Instalación de Google Chrome
+        - name: Instala Google Chrome
           include_role:
             name: google_chrome
           vars:
@@ -84,11 +86,11 @@
             browser_configuration_files: no
       when: browsers
     
-    - name: Instalación de Visual Studio Code
+    - name: Instala Visual Studio Code
       include_role:
         name: visual_studio_code
       when: vsc
-
+# ============================================================================
     - name: Instalación de Node JS
       include_role:
         name: nodejs

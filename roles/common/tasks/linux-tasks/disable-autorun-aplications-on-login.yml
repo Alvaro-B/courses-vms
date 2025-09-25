@@ -1,5 +1,5 @@
 - name: Disable autorun applications on user login
-  include_tasks: linux-check-and-modify-autostart.yml
+  include_tasks: check-and-modify-autostart.yml
   when: 
    - autorun_services == false
   loop:

@@ -1,0 +1,82 @@
+- name: Ensure ZSH
+  package:
+    name: zsh
+    state: present
+
+- name: Ensure curl
+  package:
+    name: curl
+    state: present
+
+- name: Install Oh My Zsh
+  shell: >
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+  args:
+    chdir: "/home/{{ base_username }}"
+    creates: "/home/{{ base_username }}/.oh-my-zsh"
+
+- name: "Ensure dir .oh-my-zsh belongs to {{ base_username }}" 
+  file:
+    path: "/home/{{ base_username }}/.oh-my-zsh"
+    owner: "{{ base_username }}"
+    group: "{{ base_username }}"
+    mode: '0755'
+
+- name: Clone Powerlevel10k
+  git:
+    repo: https://github.com/romkatv/powerlevel10k.git
+    dest: "/tmp/powerlevel10k"
+    version: master
+    update: yes
+
+- name: Copy powerlevel directory
+  copy:
+    src: /tmp/powerlevel10k
+    dest: "/home/{{ base_username }}/.oh-my-zsh/custom/themes/"
+    owner: "{{ base_username }}"
+    group: "{{ base_username }}"
+    mode: '0755'
+    remote_src: yes
+
+- name: "Ensure dir powerlevel10k belongs to {{ base_username }}" 
+  file:
+    path: "/home/{{ base_username }}/.oh-my-zsh/custom/themes/powerlevel10k"
+    owner: "{{ base_username }}"
+    group: "{{ base_username }}"
+    mode: '0755'
+
+- name: "Copy  zsh files"
+  copy:
+    src: "{{ item }}"
+    dest: "/home/{{ base_username }}"
+    owner: "{{ base_username }}"
+    group: "{{ base_username }}"
+    mode: '0644'
+  loop:
+    - .zshrc
+    - .zshrc.pre-oh-my-zsh
+
+- name: Create directory for powerlevel fonts
+  file:
+    path: "/usr/share/fonts/MesloLGS"
+    state: directory
+    mode: '0755'
+
+- name: Download fonts
+  get_url:
+    url: "{{ item }}"
+    dest: "/usr/share/fonts/MesloLGS"
+    mode: '0644'
+  loop:
+    - https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf
+    - https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf
+    - https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf
+    - https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
+
+- name: Update fonts cache
+  command: fc-cache -fv
+
+- name: Change shell to ZSH
+  user:
+    name: "{{ base_username }}"
+    shell: /bin/zsh
