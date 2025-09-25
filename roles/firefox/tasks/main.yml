@@ -1,6 +1,29 @@
-- name: Install Firefox 
-  block:
-    - import_tasks: firefox-installation.yml
-    - import_tasks: firefox-configuration.yml
-      when: browser_configuration_files == true
+##################################
+#   _     ___ _   _ _   ___  __  #
+#  | |   |_ _| \ | | | | \ \/ /  #
+#  | |    | ||  \| | | | |\  /   #
+#  | |___ | || |\  | |_| |/  \   #
+#  |_____|___|_| \_|\___//_/\_\  #
+################################## 
+- name: Install Firefox for Linux
+  package:
+    name: firefox
+    state: latest
+  when:
+    - ansible_windows_domain is undefined
 
+#######################################################
+#  __        _____ _   _ ____   _____        ______   #
+#  \ \      / /_ _| \ | |  _ \ / _ \ \      / / ___|  #
+#   \ \ /\ / / | ||  \| | | | | | | \ \ /\ / /\___ \  #
+#    \ V  V /  | || |\  | |_| | |_| |\ V  V /  ___) | #
+#     \_/\_/  |___|_| \_|____/ \___/  \_/\_/  |____/  #
+#######################################################
+- name: Install Firefox for Windows
+  win_chocolatey:
+    name: firefox
+    state: present
+    version: "{{firefox_version}}"
+    package_params: "/NoAutoUpdate"
+  when:
+    - ansible_windows_domain is defined

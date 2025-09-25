@@ -3,12 +3,18 @@
     name: "{{ username }}"
     state: present
 
+- name: Install ZSH
+  package:
+    name: zsh
+    state: present
+  when: user_shell == 'zsh'
+
 - name: Create user {{ username }}
   user:
     name: "{{ username }}" 
     state: present
     password: "{{ username | password_hash('sha512', 'pronoide') }}"
-    shell: /bin/bash
+    shell: /bin/{{ user_shell }}
     group: "{{ username }}"
 
 - name: autologin graphical.target CentOS
