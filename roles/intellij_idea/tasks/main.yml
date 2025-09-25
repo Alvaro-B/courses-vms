@@ -1,0 +1,11 @@
+---
+########################################
+#LINUX
+########################################
+- name: Install intellij for Linux
+  block:
+    - import_tasks: download-idea.yml
+    - import_tasks: unarchive-idea.yml
+    - import_tasks: shortcut-idea.yml
+  when:
+    - ansible_windows_domain is undefined

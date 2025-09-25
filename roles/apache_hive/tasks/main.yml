@@ -1,0 +1,162 @@
+---
+- stat: path={{ apache_hive_base_path }}/apache-hive-{{ apache_hive_version }}-bin
+  register: apache_hive_path
+- name: Install module dependency
+  dnf:
+    name: python3-lxml
+    state: installed
+  when:
+    - (ansible_distribution == "CentOS" and ansible_distribution_major_version == "8") or ansible_distribution == "Fedora"
+- name: download and install hive
+  block:
+    - name: copy hive to file
+      get_url:
+        url: "{{ apache_hive_url }}"
+        dest: /tmp/apache-hive-{{ apache_hive_version }}.tar.gz
+    - name: unarchive source
+      unarchive:
+        src: /tmp/apache-hive-{{ apache_hive_version }}.tar.gz
+        dest: "{{ apache_hive_base_path }}"
+        copy: no
+        owner: "{{ apache_hive_owner }}"
+        group: "{{ apache_hive_owner }}"
+    - file:
+        path: /tmp/apache-hive-{{ apache_hive_version }}.tar.gz
+        state: absent
+  when: not apache_hive_path.stat.exists
+- name: add to path
+  template:
+    src: templates/apache_hive_path.sh.j2
+    dest: /etc/profile.d/ansible_apache_hive.sh
+- name: change perms
+  file:
+    path: "{{ apache_hive_base_path }}/apache-hive-{{ apache_hive_version }}-bin"
+    state: directory
+    owner: "{{ apache_hive_owner }}"
+    group: "{{ apache_hive_owner }}"
+    recurse: yes
+- name: hive configuration
+  copy:
+    src: "{{ apache_hive_base_path }}/apache-hive-{{ apache_hive_version }}-bin/conf/{{ item }}.template"
+    dest: "{{ apache_hive_base_path }}/apache-hive-{{ apache_hive_version }}-bin/conf/{{ item }}"
+    owner: "{{ apache_hive_owner }}"
+    group: "{{ apache_hive_owner }}"
+    remote_src: yes
+  loop:
+    - hive-exec-log4j2.properties
+    - hive-log4j2.properties
+- name: configure hive-site
+  copy:
+    src: "{{ apache_hive_base_path }}/apache-hive-{{ apache_hive_version }}-bin/conf/hive-default.xml.template"
+    dest: "{{ apache_hive_base_path }}/apache-hive-{{ apache_hive_version }}-bin/conf/hive-site.xml"
+    owner: "{{ apache_hive_owner }}"
+    group: "{{ apache_hive_owner }}"
+    remote_src: yes      
+- name:
+  lineinfile:
+    path: "{{ apache_hive_base_path }}/apache-hive-{{ apache_hive_version }}-bin/conf/hive-site.xml"
+    regexp: "Ensures commands with OVERWRITE"
+    line: "Ensures commands with OVERWRITE (such as INSERT OVERWRITE) acquire Exclusive locks for transactional tables.  This ensures that inserts (w/o overwrite) running concurrently"
+- name: Initialize hdfs dir for hive
+  shell: |
+    source /etc/profile.d/ansible_hadoop.sh
+    hdfs dfs -mkdir /tmp
+    hdfs dfs -mkdir -p /user/hive/warehouse
+    hdfs dfs -chmod g+w /tmp
+    hdfs dfs -chmod g+w /user/hive/warehouse
+    exit 0
+  changed_when: false
+  become_user: "{{ apache_hive_owner }}"
+- name: delete incompatible jars
+  file:
+    path: "{{ apache_hive_base_path }}/apache-hive-{{ apache_hive_version }}-bin/lib/{{ item }}"
+    state: absent 
+  loop:
+    - guava-19.0.jar
+    - log4j-slf4j-impl-2.10.0.jar
+- name: download compatible guava for installed spark and mysql driver
+  get_url: 
+    url: "{{ item }}"
+    dest: "{{ apache_hive_base_path }}/apache-hive-{{ apache_hive_version }}-bin/lib/"
+    owner: "{{ apache_hive_owner }}"
+    group: "{{ apache_hive_owner }}"
+  loop:
+    - https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.22/mysql-connector-java-8.0.22.jar
+    - https://repo1.maven.org/maven2/com/google/guava/guava/27.0.1-jre/guava-27.0.1-jre.jar
+- name: create metastore schema
+  include_role: 
+    name: mysql
+    tasks_from: create-database.yml
+  vars:
+    mysql_db_name: metastore
+    mysql_load_data: yes
+    mysql_load_data_path: "{{ apache_hive_base_path }}/apache-hive-{{ apache_hive_version }}-bin/scripts/metastore/upgrade/mysql/hive-schema-{{ apache_hive_schema }}.mysql.sql"
+    mysql_load_data_remote: yes
+    mysql_owner: "{{ apache_hive_owner }}"
+    mysql_password:  "{{ apache_hive_owner }}"
+- name: configure hive to connect to mysql
+  blockinfile:
+    path: "{{ apache_hive_base_path }}/apache-hive-{{ apache_hive_version }}-bin/conf/hive-site.xml"
+    marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+    insertbefore: "</configuration>"
+    block: |
+      <property>
+        <name>javax.jdo.option.ConnectionUserName</name>
+        <value>{{ apache_hive_owner }}</value>
+      </property>
+      <property>
+        <name>system:java.io.tmpdir</name>
+        <value>/tmp/hive/java</value>
+      </property>
+      <property>
+        <name>system:user.name</name>
+        <value>${user.name}</value>
+      </property>
+- name: change enbedded driver to new mysql driver
+  lineinfile:
+    path: "{{ apache_hive_base_path }}/apache-hive-{{ apache_hive_version }}-bin/conf/hive-site.xml"
+    regexp: "    <value>org.apache.derby.jdbc.EmbeddedDriver</value>"
+    line:  "    <value>com.mysql.cj.jdbc.Driver</value>"
+- name: change enbedded driver to new mysql driver
+  lineinfile:
+    path: "{{ apache_hive_base_path }}/apache-hive-{{ apache_hive_version }}-bin/conf/hive-site.xml"
+    regexp: "    <value>jdbc:derby:;databaseName=metastore_db;create=true</value>"
+    line:  "    <value>jdbc:mysql://localhost/metastore?createDatabaseIfNotExists=true</value>"
+- name: change derby metastore to mysql
+  lineinfile:
+    path: "{{ apache_hive_base_path }}/apache-hive-{{ apache_hive_version }}-bin/conf/hive-site.xml"
+    regexp: "<value>DERBY</value>"
+    line: "<value>mysql</value>"
+- name: change mysql user password
+  lineinfile:
+    path: "{{ apache_hive_base_path }}/apache-hive-{{ apache_hive_version }}-bin/conf/hive-site.xml"
+    regexp: "<value>mine</value>"
+    line: "<value>{{ apache_hive_owner }}</value>"
+- name: Change URI metastore
+  xml:
+    path: "{{ apache_hive_base_path }}/apache-hive-{{ apache_hive_version }}-bin/conf/hive-site.xml"
+    xpath: //name[text()='hive.metastore.uris']/following::value[1]
+    value: thrift://localhost:9083     
+    state: present
+- name: Define java_home
+  shell: alternatives --list | grep jre_{{ apache_hive_openjdk_version }}_openjdk | awk '{ print $3}'
+  register: java_home_result
+- name: create service hive metastore
+  template:
+    src: hive-metastore.service.j2
+    dest: /etc/systemd/system/hive-metastore.service
+- name: create service hive
+  template:
+    src: hive.service.j2
+    dest: /etc/systemd/system/hive.service
+- name: start and enable hive metastore
+  service:
+    name: hive-metastore 
+    state: started
+    enabled: yes
+- name: start and enable hive
+  service:
+    name: hive 
+    state: started
+    enabled: yes
+        

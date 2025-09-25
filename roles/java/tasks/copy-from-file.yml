@@ -1,0 +1,5 @@
+---
+- name: Copy from file
+  copy:
+    src: "{{ role_path }}/files/jdk-{{ java_major_version }}u{{ java_minor_version }}-{{ java_platform }}-{{ java_arch }}.{{ java_package }}"
+    dest: /tmp/jdk-{{ java_major_version }}u{{ java_minor_version }}-{{ java_platform }}-{{ java_arch }}.{{ java_package }}

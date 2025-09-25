@@ -1,0 +1,3 @@
+---
+# vars file for google_chrome
+chrome_shortcut_path: /home/{{ chrome_owner }}/Desktop

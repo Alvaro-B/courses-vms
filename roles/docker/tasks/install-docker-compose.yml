@@ -1,0 +1,6 @@
+# ---
+- name: Install Docker Compose 
+  dnf:
+    name: docker-compose-plugin
+    state: latest
+

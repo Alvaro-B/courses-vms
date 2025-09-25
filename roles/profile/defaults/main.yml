@@ -1,0 +1,6 @@
+---
+# defaults file for profile
+required_vars:
+  - profile_software_name
+  - profile_software_path
+  - profile_software_version

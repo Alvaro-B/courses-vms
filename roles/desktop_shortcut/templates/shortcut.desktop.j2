@@ -1,0 +1,10 @@
+#!/usr/bin/env xdg-open
+
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal={{ desktop_shortcut_terminal | string | lower}}
+Exec={{ desktop_shortcut_command }}
+Name={{ desktop_shortcut_title }}
+Comment={{ desktop_shortcut_comment }}
+Icon={{ desktop_shortcut_image_path }}

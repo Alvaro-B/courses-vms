@@ -1,0 +1,11 @@
+- stat: path="{{ eclipse_system_path }}/eclipse"
+  register: eclipse_path
+- name: unarchive source
+  unarchive:
+    src: /tmp/eclipse.tar.gz
+    dest: "{{ eclipse_system_path }}"
+    copy: no
+  when: eclipse_path.stat.exists == False
+- file:
+    path: /tmp/eclipse.tar.gz
+    state: absent

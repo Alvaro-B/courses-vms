@@ -1,0 +1,11 @@
+- name: Install chromium with homebrew
+  homebrew_tap:
+    name: mtslzr/marmaduke-chromium
+    state: present
+- homebrew:
+    update_homebrew: true
+    upgrade_all: true
+- name: Install chromium with homebrew
+  homebrew_cask:
+    name: marmaduke-chromium
+    state: present

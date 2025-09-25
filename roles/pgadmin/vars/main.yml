@@ -1,0 +1,7 @@
+---
+# vars file for pgadmin4
+pgadmin_image: dpage/pgadmin4
+shortcut_command: "firefox http://localhost:{{ pgadmin_port }}"
+shortcut_title: PGAdmin
+shortcut_comment: PGAdmin {{ pgadmin_version}}
+shortcut_icon: /usr/share/pgadmin/pgadmin.ico

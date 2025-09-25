@@ -1,0 +1,36 @@
+---
+- name: create directory to download Ganache
+  file:
+    path: /usr/local/ganache
+    state: directory
+    owner: "{{ ganache_owner }}"
+    group: "{{ ganache_group }}"
+- name: Install ganache
+  block:
+    - name: Descargar ganache en el escritorio
+      get_url:
+        url: "{{ ganache_url }}"
+        dest: /usr/local/ganache/ganache.AppImage
+        owner: "{{ ganache_owner }}"
+        group: "{{ ganache_group }}" 
+        mode: u+x
+- name: Download ico
+  get_url:
+    url: "{{ ganache_url_ico }}"
+    dest: /usr/local/ganache/Ganache-Logo.png
+    owner: "{{ ganache_owner }}"
+    group: "{{ ganache_group }}" 
+- name: Desktop directory exists
+  file:
+    path: /home/{{ ganache_owner}}/Desktop
+    state: directory
+    mode: 0755
+    owner: "{{ ganache_owner }}"
+    group: "{{ ganache_group }}"
+- name: add shortcut
+  template:
+    src: templates/shortcut.desktop.j2
+    dest: /home/{{ ganache_owner}}/Desktop/ganache.desktop
+    owner: "{{ ganache_owner }}"
+    group: "{{ ganache_group }}"
+    mode: 0740

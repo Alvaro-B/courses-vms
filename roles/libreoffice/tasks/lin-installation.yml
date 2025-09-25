@@ -1,0 +1,13 @@
+- name: Find the rpm packages
+  shell: ls -d /opt/LibreOffice_{{ libreoffice_version }}_Linux_x86-64_rpm/RPMS/*
+  register: rpm_packages
+  changed_when: false
+- debug:
+    msg: "{{ rpm_packages.stdout_lines }}"
+    verbosity: 2
+- name: Install libreoffice using rpm_list
+  become: true
+  dnf:
+    name: "{{ rpm_packages.stdout_lines }}"
+    state: installed
+    disable_gpg_check: yes

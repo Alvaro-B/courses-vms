@@ -1,0 +1,11 @@
+---
+- name: Add Chrome Repository (CentOS System)
+  yum_repository:
+        name: google-chrome
+        description: google-chrome
+        baseurl: 'http://dl.google.com/linux/chrome/rpm/stable/{{ ansible_architecture }}'
+        gpgkey: "https://dl-ssl.google.com/linux/linux_signing_key.pub"
+        gpgcheck: yes
+        enabled: yes
+        state: present  
+  

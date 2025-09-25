@@ -1,0 +1,17 @@
+---
+# defaults file for java
+force_local: true
+java_major_version: 8
+java_minor_version: 191
+java_build: 12
+java_hash: 2787e4a523244c269598db4e85c51e0c
+java_platform: linux
+java_arch: x64
+java_package: rpm
+# open | oracle
+java_option: oracle
+# 1.8.0 | 11 | 14
+java_openjdk_version: 11
+java_set_java_home: false
+java_set_default: true
+

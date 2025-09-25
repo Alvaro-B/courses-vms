@@ -1,0 +1,26 @@
+# mysql_load_data: yes
+# mysql_load_data_path: yes
+# mysql_load_data_remote: yes
+# mysql_db_name: metastore
+---
+- import_tasks: mysql-dependencies.yml
+- name: create new database
+  mysql_db:
+    name: "{{ mysql_db_name }}"
+    state: present
+    login_user: "{{ mysql_owner }}"
+    login_password: "{{ mysql_password }}"
+    login_host: 127.0.0.1
+  register: mysql_db
+- name: load data into new database
+  mysql_db:
+    name: "{{ mysql_db_name }}"
+    state: import
+    login_user: "{{ mysql_owner }}"
+    login_password: "{{ mysql_password }}"
+    login_host: 127.0.0.1
+    target: "{{ mysql_load_data_path }}"
+  when:
+    - mysql_load_data
+    - mysql_load_data_remote
+    - mysql_db.changed

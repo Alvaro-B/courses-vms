@@ -1,0 +1,122 @@
+
+
+#    ___ ___ ___     ___    ___ _  _ ___ _____ _   _    _    
+#   / __| _ \_ _|__ / _ \  |_ _| \| / __|_   _/_\ | |  | |   
+#  | (__|   /| |___| (_) |  | || .` \__ \ | |/ _ \| |__| |__ 
+#   \___|_|_\___|   \___/  |___|_|\_|___/ |_/_/ \_\____|____|
+#                                                           
+#
+- name: INSTALL CRI-0
+  block:
+    - name: Configure load file for kernel modules
+      copy:
+        src: crio.conf
+        dest: /etc/modules-load.d/
+        owner: root
+        group: root
+        remote_src: no
+
+    - name: Load kernel modules
+      modprobe:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - br_netfilter
+        - overlay
+        - iptable_raw
+
+    - name: Configure IP tables rules
+      copy:
+        src: 99-kubernetes-cri.conf
+        dest: /etc/sysctl.d/
+        owner: root
+        group: root
+        remote_src: no
+
+    - name: Reload IP tables configuration
+      shell: sysctl --system
+
+    - name: Install cri-o
+      shell: dnf module -y install cri-o:{{ crio_version }} 
+
+    - name: Enable cri-o
+      systemd:
+        name: crio
+        enabled: true
+  when: install_crio
+
+
+
+#   _  ___   _ ___ ___ ___ _  _ ___ _____ ___ ___   ___ _  _ ___ _____ _   _    _    
+#  | |/ / | | | _ ) __| _ \ \| | __|_   _| __/ __| |_ _| \| / __|_   _/_\ | |  | |   
+#  | ' <| |_| | _ \ _||   / .` | _|  | | | _|\__ \  | || .` \__ \ | |/ _ \| |__| |__ 
+#  |_|\_\\___/|___/___|_|_\_|\_|___| |_| |___|___/ |___|_|\_|___/ |_/_/ \_\____|____|
+#                                                                                 
+#
+- name: Configure IP Forwarding
+  copy:
+    src: k8s.conf
+    dest: /etc/sysctl.d/
+    owner: root
+    group: root
+    remote_src: no
+
+- name: Reload configuration
+  shell: sysctl --system
+
+- name: Disable zram 
+  dnf: 
+    name: zram-generator-defaults
+    state: absent
+
+- name: Install Kubernetes packages for Fedora
+  dnf: 
+    name: "{{ item }}"
+  loop: 
+    - kubernetes-kubeadm 
+    - cri-tools 
+    - iproute-tc
+
+- name: Enable kubelet
+  systemd:
+    name: kubelet
+    enabled: true
+
+- name: Disable service systemd-resolved
+  systemd:
+    name: systemd-resolved
+    enabled: false
+
+- name: Configure NetworkManager.conf
+  lineinfile:
+    path: /etc/NetworkManager/NetworkManager.conf
+    regexp: '^#plugins=keyfile,ifcfg-rh'
+    line: dns=default
+    backup: true
+
+- name: Unlink symlink /etc/resolv.conf
+  file: 
+    path: /etc/resolv.conf
+    state: absent
+
+- name: Create file /etc/resolv.conf
+  file: 
+    path: /etc/resolv.conf
+    state: touch
+
+- name: Ensure directory /etc/containers/
+  file: 
+    path: /etc/containers/
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Configure /etc/containers/registries.conf
+  copy:
+    src: registries.conf
+    dest: /etc/containers/registries.conf
+    remote_src: no
+
+
+  

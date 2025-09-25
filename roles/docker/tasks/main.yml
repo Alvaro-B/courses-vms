@@ -1,0 +1,9 @@
+---
+# tasks file for profile
+- import_tasks: install-repository.yml
+- import_tasks: install-docker.yml
+- import_tasks: service-docker.yml
+- import_tasks: authorize-user.yml
+- import_tasks: install-docker-compose.yml
+  when:
+    - docker_compose_install

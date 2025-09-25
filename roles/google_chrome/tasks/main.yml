@@ -1,0 +1,19 @@
+---
+# LINUX TASKS
+- name: Install google-chrome for Linux
+  block:
+    - import_tasks: add-chrome-repo.yml
+    - import_tasks: install-chrome.yml
+    - import_tasks: check-desktop-directory-exists.yml
+    - import_tasks: copy-desktop-direct-access.yml
+    - import_tasks: chrome-configuration.yml
+  when:
+    - ansible_windows_domain is undefined
+
+- name: Install google-chrome for Windows
+  block:
+    - import_tasks: install-chrome.yml
+    - import_tasks: chrome-configuration.yml
+  when:
+    - ansible_windows_domain is defined
+  

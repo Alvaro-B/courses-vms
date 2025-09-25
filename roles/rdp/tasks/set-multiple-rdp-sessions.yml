@@ -1,0 +1,26 @@
+- name: Allow multiple RDP sessions on Windows Server
+  win_feature:
+    name:
+      - RDS-Connection-Broker
+      - RDS-Licensing
+      - RDS-RD-Server
+  when: ansible_windows_domain is defined
+
+- name: Set multiple sessions - Fedora
+  block:
+    - name: Set multiple sessions in Fedora => Edit /etc/xrdp/sesman.ini
+      lineinfile:
+        path: /etc/xrdp/sesman.ini 
+        insertafter: Seat 
+        regexp: "^Policy=Default"
+        line: Policy=UBDC
+    
+    - name: Set multiple sessions in Fedora => Edit /etc/xrdp/xrdp.ini
+      lineinfile:
+        path: /etc/xrdp/xrdp.ini 
+        regexp: "^autorun="
+        line: autorun=Xorg
+  when:
+    - ansible_distribution == "Fedora"
+    - ansible_windows_domain is undefined
+

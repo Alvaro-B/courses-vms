@@ -1,0 +1,75 @@
+---
+# tasks file for java
+# OpenJDK for Linux
+- name: Install OpenJDK for Linux
+  block:
+    - name: Install centos java jdk 
+      block:
+        - name: Descarga o copia de jdk
+          block:
+            - include_tasks: copy-from-oracle.yml
+          rescue:
+            - include_tasks: copy-from-file.yml
+          when: 
+            - not force_local
+            - ansible_distribution == 'CentOS'
+        - include_tasks: copy-from-file.yml
+          when: 
+            - force_local 
+        - include_tasks: install-jdk.yml
+        - include_tasks: create-profile.yml
+          when:
+            - java_set_java_home
+        - include_tasks: alternatives-control.yml
+          when:
+            - java_set_default
+      when:
+        - ansible_distribution == 'CentOS'
+        - java_option == 'oracle'
+    - name: Install OpenJDK
+      block:
+        - name: Install OpenJDK
+          yum:
+            name: 
+              - java-{{ java_openjdk_version }}-openjdk
+              - java-{{ java_openjdk_version }}-openjdk-*
+            state: installed
+        - name: get java openjdk path
+          shell: "alternatives --list | grep java_sdk_{{ java_openjdk_version }}_openjdk | awk '{ print $3}' "
+          register: path_openjdk
+          changed_when: false
+          when:
+            - ansible_distribution == 'CentOS' or ansible_distribution == 'Fedora'
+            - java_option == 'openjdk'
+        - name: correct java version selected
+          alternatives:
+            link: /usr/bin/java
+            name: java
+            path: "{{ path_openjdk.stdout }}/bin/java"
+          when:
+            - java_set_default
+        - name: Create variable path
+          include_role:
+            name: profile
+          vars:
+            profile_software_name: java
+            profile_software_path: "{{ path_openjdk.stdout }}"
+            profile_software_version: ansible
+          when:
+            - java_set_java_home
+      when:
+        - ansible_distribution == 'CentOS' or ansible_distribution == 'Fedora'
+        - java_option == 'openjdk'
+    - include_tasks: openjdk-java-ubuntu.yml
+      when:  
+        - ansible_distribution == 'Ubuntu'
+  when: 
+    - ansible_windows_domain is undefined
+
+  # OpenJDK for Windows
+- name: Install OpenJDK for Windows
+  block:
+    - import_tasks: win-download-and-unarchive-java-zip.yml
+    - import_tasks: win-default-java-version.yml
+  when:
+    - ansible_windows_domain is defined

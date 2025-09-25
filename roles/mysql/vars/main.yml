@@ -1,0 +1,9 @@
+---
+# vars file for mysql
+distros:
+  CentOS_7:
+    pip_package: python2-pip
+  CentOS_8:
+    pip_package: python3-pip
+# Solo se puede cambiar en la primera ejecución
+mysql_root_password: mysql

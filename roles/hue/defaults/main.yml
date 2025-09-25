@@ -1,0 +1,4 @@
+---
+# defaults file for hue
+hue_owner: vagrant
+hue_version: 20211231-140101

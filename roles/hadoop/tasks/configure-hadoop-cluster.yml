@@ -1,0 +1,13 @@
+- name: Copy hdfs-site
+  template:
+    src: hdfs-site.xml.j2
+    dest: "{{ hadoop_base_path }}/etc/hadoop/hdfs-site.xml"
+    owner: "{{ hadoop_owner }}"
+    group: "{{ hadoop_owner }}"
+- name: Copy core-site
+  template:
+    src: core-site.xml.j2
+    dest: "{{ hadoop_base_path }}/etc/hadoop/core-site.xml"
+    owner: "{{ hadoop_owner }}"
+    group: "{{ hadoop_owner }}"
+    backup: yes

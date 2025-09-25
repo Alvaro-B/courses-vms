@@ -1,0 +1,11 @@
+---
+# vars file for java
+java_base_path: "/usr/java/jdk1.{{ java_major_version }}.0_{{ java_minor_version }}-amd64"
+java_url: http://download.oracle.com/otn-pub/java/jdk/{{ java_major_version }}u{{ java_minor_version }}-b{{ java_build }}/{{ java_hash }}/jdk-{{ java_major_version }}u{{ java_minor_version }}-{{ java_platform }}-{{ java_arch }}.{{ java_package }}
+
+#openJDK for Windows
+windows_jdk_versions:
+  11:
+    windows_java_build: 28
+  17:
+    windows_java_build: 35

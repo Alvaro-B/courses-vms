@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <property>
+        <name>dfs.replication</name>
+        <value>1</value>
+    </property>
+    <property>
+        <name>dfs.data.dir</name>
+        <value>{{ hadoop_base_path }}/hadoop_data/dfs/data</value>
+        <final>true</final>
+    </property>
+    <property>
+        <name>dfs.name.dir</name>
+        <value>{{ hadoop_base_path }}/hadoop_data/dfs/name</value>
+        <final>true</final>
+    </property>
+</configuration>

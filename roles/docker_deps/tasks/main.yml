@@ -1,0 +1,4 @@
+---
+# tasks file for profile
+- import_tasks: install-pip.yml
+- import_tasks: install-docker-py.yml

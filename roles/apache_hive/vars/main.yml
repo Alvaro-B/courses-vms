@@ -1,0 +1,6 @@
+---
+# vars file for apache-hive
+apache_hive_url: http://apache.uvigo.es/hive/hive-{{ apache_hive_version }}/apache-hive-{{ apache_hive_version }}-bin.tar.gz
+apache_hive_base_name: HIVE
+apache_hive_base_path: /opt
+apache_hive_schema: 3.1.0

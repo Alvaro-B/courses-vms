@@ -1,0 +1,6 @@
+- name: Install Firefox 
+  block:
+    - import_tasks: firefox-installation.yml
+    - import_tasks: firefox-configuration.yml
+      when: browser_configuration_files == true
+

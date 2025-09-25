@@ -1,0 +1,30 @@
+- name: Install RabbitMQ Repository
+  yum_repository:
+      name: packagecloud-rabbitmq-rpm
+      description: RabbitMQ Repository
+      baseurl: 'https://packagecloud.io/rabbitmq/rabbitmq-server/el/{{ ansible_distribution_major_version }}/$basearch'
+      gpgkey: https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
+              https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
+      enabled: yes
+      gpgcheck: no
+      sslverify: yes
+      sslcacert: /etc/pki/tls/certs/ca-bundle.crt
+      metadata_expire: "300"
+- name: Install Erlang Repository
+  yum_repository:
+    name: erlang-solutions
+    description: CentOS {{ ansible_distribution_major_version }} {{ ansible_architecture }} - Erlang Solutions
+    baseurl: https://packages.erlang-solutions.com/rpm/centos/{{ ansible_distribution_major_version }}/{{ ansible_architecture }}
+    enabled: yes
+    gpgcheck: 1
+    gpgkey: https://packages.erlang-solutions.com/rpm/erlang_solutions.asc
+- name: Install RabbitMQ
+  yum:
+    name: rabbitmq-server
+    state: present
+- name: Start and Enable RabbitMQ
+  service:
+    name: rabbitmq-server
+    state: started
+    enabled: yes
+    

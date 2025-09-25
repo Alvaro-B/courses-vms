@@ -1,0 +1,4 @@
+- name: Create shortcut for eclipse.exe on the desktop
+  win_shortcut:
+    src: C:\Program Files\eclipse\eclipse.exe
+    dest: C:\Users\Public\Desktop\eclipse.lnk

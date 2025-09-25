@@ -1,0 +1,9 @@
+---
+- name: unarchive source
+  unarchive:
+    src: /tmp/{{ maven_filename }}.tar.gz
+    dest: /usr/local/
+    copy: no
+- file:
+    path: /tmp/{{ maven_filename }}.tar.gz
+    state: absent

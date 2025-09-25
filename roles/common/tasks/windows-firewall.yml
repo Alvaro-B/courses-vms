@@ -1,0 +1,5 @@
+- name: Disable Windows firewall 
+  win_firewall:
+    state: disabled
+    profiles:
+      "{{ windows_firewall_profiles }}"

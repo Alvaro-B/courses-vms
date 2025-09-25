@@ -1,0 +1,15 @@
+- name: Ensure xconf directory in skeleton
+  file:
+    path: /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Configure screensaver 
+  template:
+    src: screensaver-conf.j2
+    dest: /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml
+    owner: root
+    group: root
+    mode: 0755

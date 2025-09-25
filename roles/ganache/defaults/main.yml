@@ -1,0 +1,4 @@
+---
+# defaults file for ganache
+ganache_version: 2.5.4
+ganache_owner: vagrant

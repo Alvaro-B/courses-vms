@@ -1,0 +1,3 @@
+---
+# defaults file for apache-sqoop
+apache_sqoop_version: 1.4.7

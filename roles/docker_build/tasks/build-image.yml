@@ -1,0 +1,17 @@
+- name: building image with module
+  docker_image:
+    build:
+      path: "{{ docker_build_path }}"
+      pull: no
+    source: build
+    name: "{{ docker_image_name }}"
+  when: 
+    - (ansible_distribution == "CentOS" and not ansible_distribution_major_version == "7") or (ansible_distribution != "CentOS")
+
+- name: building image manually
+  shell: 
+    cmd: docker build -t {{ docker_image_name }} .
+    chdir: "{{ docker_build_path }}"
+  when:
+    - ansible_distribution == 'CentOS'
+    - ansible_distribution_major_version == '7'

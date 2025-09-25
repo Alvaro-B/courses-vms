@@ -1,0 +1,4 @@
+- name: Install Android Studio
+  win_chocolatey:
+    name: androidstudio
+    state: latest

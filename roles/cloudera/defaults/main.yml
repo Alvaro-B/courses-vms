@@ -1,0 +1,6 @@
+---
+cloudera_server_role: master
+cloudera_version: 5.15.1
+cloudera_ip_server_host: master-cloudera.local
+cloudera_java_option: oracle
+cloudera_openjdk_version:

@@ -1,0 +1,15 @@
+- name: Linux Anaconda 
+  block:
+    - import_tasks: lin-download-and-install.yml
+    - import_tasks: lin-set-executor.yml
+    - import_tasks: lin-set-anaconda-fact.yml
+    - import_tasks: lin-add-shortcuts.yml
+  when:
+    - ansible_windows_domain is undefined
+
+- name: Windows Anaconda 
+  block:
+    - import_tasks: win-download-and-install.yml
+    - import_tasks: win-anaconda-shortcut.yml
+  when:
+    - ansible_windows_domain is defined

@@ -1,0 +1,10 @@
+---
+# defaults file for mysql
+mysql_workbench_version: 8.0.19-1
+mysql_version: 8.0
+mysql_repo_version: 80
+mysql_username: mysql
+mysql_password: mysql
+mysql_dockerized: false
+mysql_native_shell_client: true
+mysql_client: workbench

@@ -1,0 +1,4 @@
+---
+# tasks file for profile
+#- include_tasks: template-test-vars.yml
+- include_tasks: template-profile-base.yml

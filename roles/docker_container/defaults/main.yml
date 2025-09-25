@@ -1,0 +1,9 @@
+---
+# defaults file for docker_container
+docker_container_name: test
+docker_image: test
+docker_ports: []
+docker_volumes: []
+docker_env: {}
+docker_recreate_container: no
+docker_network_mode: bridge

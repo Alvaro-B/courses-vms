@@ -1,0 +1,27 @@
+---
+# tasks file for rdp
+- name: Linux RDP users
+  block:
+    - import_tasks: activate-epel-repository.yml
+    - import_tasks: install-xrdp.yml
+    - name: Generate Linux RDP users
+      include_tasks: generate-users.yml
+      loop: "{{ rdp_users }}"
+    - import_tasks: agregate-xfce-configuration.yml
+    - import_tasks: add-corrected-spanish-layout.yml
+    - import_tasks: set-multiple-rdp-sessions.yml
+    - import_tasks: prevent-error-listening-sockets.yml
+  when:
+    - ansible_windows_domain is undefined
+    
+- name: Windows RDP users
+  block:
+    - name: Generate Windows RDP Users
+      include_tasks: generate-users.yml
+      loop: "{{ rdp_users }}"
+    - import_tasks: set-multiple-rdp-sessions.yml
+      when: ansible_os_product_type == 'server'
+    - import_tasks: allow-remote-connections.yml
+  when:
+    - ansible_windows_domain is defined    
+

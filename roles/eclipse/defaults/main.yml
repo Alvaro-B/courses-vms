@@ -1,0 +1,28 @@
+---
+# defaults file for profile
+eclipse_version: 'R'
+eclipse_alternative_version: 'RC1'
+eclipse_release: '2024-12'
+#http://ftp.fau.de/eclipse/technology/epp/downloads/release/2019-03/R/eclipse-jee-2019-03-R-linux-gtk-x86_64.tar.gz
+#http://ftp.fau.de/eclipse/technology/epp/downloads/release/2020-03/R/eclipse-jee-2020-03-R-incubation-linux-gtk-x86_64.tar.gz
+#https://archive.eclipse.org/technology/epp/downloads/release/2022-03/R/eclipse-jee-2022-03-R-win32-x86_64.zip 
+eclipse_mirror: 'https://archive.eclipse.org'
+eclipse_system_path: '/usr/local'
+eclipse_platform: 'linux-gtk-x86_64'
+eclipse_base: 'jee'
+shortcut_command: /usr/local/eclipse/eclipse
+shortcut_title: Eclipse {{ eclipse_release }}
+shortcut_comment: Eclipse {{ eclipse_base }} {{ eclipse_release }} {{ eclipse_version }}
+shortcut_icon: "{{ eclipse_system_path }}/eclipse/icon.xpm"
+eclipse_owner: vagrant
+eclipse_shortcut_path: /home/{{ eclipse_owner }}/Desktop
+eclipse_final_url: "{{ eclipse_mirror }}/technology/epp/downloads/release/{{ eclipse_release }}/{{ eclipse_version }}/eclipse-{{ eclipse_base }}-{{ eclipse_release }}-{{ eclipse_version }}-{{ eclipse_platform }}.tar.gz"
+eclipse_alternative_final_url: "{{ eclipse_mirror }}/technology/epp/downloads/release/{{ eclipse_release }}/{{ eclipse_alternative_version }}/eclipse-{{ eclipse_base }}-{{ eclipse_release }}-{{ eclipse_alternative_version }}-{{ eclipse_platform }}.tar.gz"
+install_oepe: false
+install_jboss_tools: false
+install_sts: false
+eclipse_java_option: openjdk
+eclipse_jdk_version: 11
+eclipse_openjdk_version: 11
+
+windows_eclipse_final_url: "{{ eclipse_mirror }}/technology/epp/downloads/release/{{ eclipse_release }}/{{ eclipse_version }}/eclipse-{{ eclipse_base }}-{{ eclipse_release }}-{{ eclipse_version }}-win32-x86_64.zip"

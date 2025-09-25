@@ -1,0 +1,5 @@
+---
+scala_version: '2.12.8'
+scala_owner: vagrant
+scala_java_option: oracle
+scala_openjdk_version: 

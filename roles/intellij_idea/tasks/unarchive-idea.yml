@@ -1,0 +1,14 @@
+- stat: path="/usr/local/idea"
+  register: idea_path
+- name: unarchive idea
+  unarchive:
+    src: /tmp/idea.tar.gz
+    dest: "{{ idea_system_path }}"
+    copy: no
+  when: idea_path.stat.exists == False
+- name: Move directory to a predecible path
+  shell: "mv /usr/local/idea-* /usr/local/idea"
+  when: idea_path.stat.exists == False
+- file:
+    path: /tmp/idea.tar.gz
+    state: absent

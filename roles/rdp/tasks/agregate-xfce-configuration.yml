@@ -1,0 +1,9 @@
+- name: Agregar configuracion xfce a usuarios
+  copy:
+    src: .Xclients
+    dest: /home/{{ item }}/
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: "a+x"
+  loop: "{{ rdp_users + rdp_principal }}"
+  when: not ansible_distribution == "Fedora"

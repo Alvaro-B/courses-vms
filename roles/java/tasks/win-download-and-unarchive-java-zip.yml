@@ -1,0 +1,15 @@
+- name: Create java directory
+  win_file:
+    path: C:\\java\java_{{ java_openjdk_version }}
+    state: directory
+
+- name: Download zip with Java binaries
+  win_get_url:
+    url: https://download.java.net/openjdk/jdk{{ java_openjdk_version }}/ri/openjdk-{{ java_openjdk_version }}+{{ windows_jdk_versions[java_openjdk_version].windows_java_build }}_windows-x64_bin.zip
+    dest: C:\\java\java_{{ java_openjdk_version }}
+
+- name: Extract files
+  win_unzip:
+    src: 'C:\\java\java_{{ java_openjdk_version }}\openjdk-{{ java_openjdk_version }}+{{ windows_jdk_versions[java_openjdk_version].windows_java_build }}_windows-x64_bin.zip'
+    dest: C:\\java\java_{{ java_openjdk_version }}
+  

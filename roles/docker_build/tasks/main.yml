@@ -1,0 +1,3 @@
+---
+# tasks file for profile
+- import_tasks: build-image.yml

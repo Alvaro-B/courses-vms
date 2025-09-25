@@ -1,0 +1,14 @@
+- stat: path=/etc/environment
+  register: environment_file
+- name: Create nonexistent environment file
+  file:
+    path: /etc/environment
+    state: touch
+  when: not environment_file.stat.exists
+  
+- name: Correct ssh language definition
+  blockinfile:
+    path: /etc/environment
+    block: |
+      LANG=en_US.utf-8
+      LC_ALL=en_US.utf-8"

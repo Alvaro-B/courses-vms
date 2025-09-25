@@ -1,0 +1,9 @@
+---
+# vars file for spring_tool_suite
+sts_system_path: /usr/local
+shortcut_command: /usr/local/sts/SpringToolSuite{{ spring_tool_suite_major_version }}
+shortcut_title: Spring Tool Suite {{ spring_tool_suite_major_version }}
+shortcut_comment: Spring Tool Suite {{ spring_tool_suite_major_version }}
+shortcut_icon: "{{ sts_system_path }}/sts/icon.xpm"
+sts_shortcut_path: /home/{{ spring_tool_suite_owner }}/Desktop
+spring_tool_suite_url: https://download.springsource.com/release/STS{{ spring_tool_suite_major_version }}/{{ spring_tool_suite_version }}/dist/{{ spring_tool_suite_distribution }}/spring-tool-suite-{{ spring_tool_suite_major_version }}-{{ spring_tool_suite_version }}-{{ spring_tool_suite_distribution }}.0-linux.gtk.x86_64.tar.gz

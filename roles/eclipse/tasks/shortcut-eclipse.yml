@@ -1,0 +1,21 @@
+- name: Desktop directory exists
+  file:
+    path: "{{ eclipse_shortcut_path }}"
+    state: directory
+    mode: 0755
+    owner: "{{ eclipse_owner }}"
+    group: "{{ eclipse_owner }}"
+- name: add shortcut
+  template:
+    src: templates/shortcut.desktop.j2
+    dest: "{{ eclipse_shortcut_path }}/eclipse.desktop"
+    owner: "{{ eclipse_owner }}"
+    group: "{{ eclipse_owner }}"
+    mode: 0740
+- name: add eclipse to applications
+  template:
+    src: templates/shortcut.desktop.j2
+    dest: "/usr/share/applications/eclipse.desktop"
+    owner: "root"
+    group: "root"
+    mode: 0755

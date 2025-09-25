@@ -1,0 +1,145 @@
+############################################
+##LINUX
+############################################
+- name: Configure Firefox for Linux
+  block:
+    - reboot:
+
+    - name: Start firefox to generate base structure
+      shell: DISPLAY=:0 firefox &
+      async: 10
+      poll: 0
+      become_user: "{{ base_username }}"
+
+    - name: Wait for generate directories
+      pause:
+        seconds: 10
+
+    - name: get configuration profile path
+      shell: ls /home/{{ base_username }}/.mozilla/firefox | grep default-release
+      retries: 3
+      delay: 10
+      register: directory_name
+      until: directory_name.rc == 0
+
+    - name: Copy configuration files
+      copy:
+        src: "{{ item}}"
+        dest: /home/{{base_username}}/.mozilla/firefox/{{ directory_name.stdout_lines[0] }}/
+      become_user: "{{ base_username }}"
+      loop:
+        - user.js
+        - prefs.js
+        - xulstore.json
+
+    - name: kill firefox 
+      shell: killall firefox
+
+    - name: Wait for process to kill
+      pause:
+        seconds: 5  
+
+    - name: Start firefox to generate base structure
+      shell: DISPLAY=:0 firefox &
+      async: 10
+      poll: 0
+      become_user: "{{ base_username }}"
+
+    - name: Wait for announcements
+      pause:
+        seconds: 40
+
+    - name: kill firefox 
+      shell: killall firefox
+
+    - name: Wait for process to kill after ads
+      pause:
+        seconds: 5 
+
+    - name: delete cache session for firefox
+      shell: rm -rf /home/{{base_username}}/.mozilla/firefox/{{ directory_name.stdout_lines[0] }}/sessionstore-backups
+      become_user: "{{ base_username }}"
+
+    - name: Copy configuration files
+      copy:
+        src: xulstore.json
+        dest: /home/{{base_username}}/.mozilla/firefox/{{ directory_name.stdout_lines[0] }}/
+      become_user: "{{ base_username }}"
+
+    - name: Include configuration files in /etc/skel
+      include_role:
+        name: skeleton
+
+  when: 
+    - ansible_windows_domain is undefined
+
+############################################
+##WINDOWS
+############################################
+
+- name: Configure Firefox for Windows
+  block:
+  - name: Create sheduled task to run Firefox 
+    win_scheduled_task:
+      name: runFirefox
+      actions:
+      - path: powershell
+        arguments: '&start firefox'
+      triggers:
+      - type: logon
+        user_id: "{{ base_username }}"
+      username: "{{ base_username }}"
+      disallow_start_if_on_batteries: false
+      run_level: highest
+      compatibility: 4
+      state: present
+      enabled: yes
+
+  - name: Reboot to run Firefox for the first time
+    win_reboot:
+
+  - name: Wait for Firefox run
+    win_wait_for_process:
+      process_name_exact: firefox
+      state: present
+      timeout: 500
+      sleep: 10
+
+  - name: Disable runFirefox task
+    win_scheduled_task:
+      name: runFirefox
+      enabled: no
+
+  - name: Stop Firefox
+    win_shell: 'taskkill /F /IM firefox.exe /T'
+    become_user: "{{base_username}}"
+
+  - name: Find default-release directory
+    win_find:
+      paths: 'C:\Users\{{base_username}}\AppData\Roaming\Mozilla\Firefox\Profiles'
+      patterns: '*-release'
+      file_type: directory
+    register: default_release
+
+  - set_fact:
+      directory_path: "{{ default_release.files | map(attribute='path') | list}}"
+
+  - name: Copy user.js to user profile directory
+    win_copy:
+      src: user.js
+      dest: "{{item}}"
+    loop: "{{directory_path}}"
+
+  - name: Copy prefs.js to user profile directory
+    win_copy:
+      src: prefs.js
+      dest: "{{item}}"
+    loop: "{{directory_path}}"
+
+  - name: delete cache
+    win_file:
+      path: "{{ directory_path[0] }}/sessionstore-backups"
+      state: absent
+
+  when: 
+    - ansible_windows_domain is defined

@@ -1,0 +1,14 @@
+- name: Desktop directory exists
+  file:
+    path: "{{ idea_shortcut_path }}"
+    state: directory
+    mode: 0755
+    owner: "{{ idea_owner }}"
+    group: "{{ idea_owner }}"
+- name: add shortcut
+  template:
+    src: templates/shortcut.desktop.j2
+    dest: "{{ idea_shortcut_path }}/idea.desktop"
+    owner: "{{ idea_owner }}"
+    group: "{{ idea_owner }}"
+    mode: 0740

@@ -1,0 +1,61 @@
+# vars
+# mysql_username
+# mysql_password
+- name: Install dependencies
+  yum:
+    name: 
+      - python2-PyMySQL
+      - python2-cryptography
+    state: present
+  when:
+  - ansible_distribution == "CentOS"
+  - ansible_distribution_major_version == "7"   
+
+- name: Install python dependency to mysql module
+  dnf:
+    name: 
+      - python3-PyMySQL
+      - python3-cryptography
+  when:
+    - (ansible_distribution == "CentOS" and ansible_distribution_major_version == "8") or ansible_distribution == "Fedora"
+
+- name: create username {{ mysql_username }} with password {{ mysql_password }}
+  mysql_user:
+    name: "{{ mysql_username }}"
+    password: "{{ mysql_password }}"
+    host: "%"
+    priv: "*.*:ALL"
+    state: present
+  #no_log: yes
+
+- name: eval /home/{{ mysql_username }} directory
+  stat:
+    path: /home/{{ mysql_username }}
+  register: file_details
+
+- name: Automatic login if home dir exists
+  template:
+    src: my.cnf.j2
+    dest: /home/{{ mysql_username }}/.my.cnf
+    owner: "{{ mysql_username }}"
+    group: "{{ mysql_username }}"
+  vars:
+    my_cnf_user: "{{ mysql_username }}"
+    my_cnf_pass: "{{ mysql_password }}"
+  when: 
+    - file_details.stat.exists
+    - not mysql_dockerized
+    
+- name: Automatic login if home dir exists
+  template:
+    src: my.cnf.docker.j2
+    dest: /home/{{ mysql_username }}/.my.cnf
+    owner: "{{ mysql_username }}"
+    group: "{{ mysql_username }}"
+  vars:
+    my_cnf_user: "{{ mysql_username }}"
+    my_cnf_pass: "{{ mysql_password }}"
+  when: 
+    - file_details.stat.exists
+    - mysql_dockerized
+    - mysql_native_shell_client

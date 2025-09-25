@@ -1,0 +1,23 @@
+- name: Desktop directory exists
+  file:
+    path: "{{ postman_shortcut_path }}"
+    state: directory
+    mode: 0755
+    owner: "{{ postman_owner }}"
+    group: "{{ postman_owner }}"
+
+- name: add shortcut
+  template:
+    src: templates/shortcut.desktop.j2
+    dest: "{{ postman_shortcut_path }}/postman.desktop"
+    owner: "{{ postman_owner }}"
+    group: "{{ postman_group }}"
+    mode: 0740
+
+- name: add postman to applications
+  template:
+    src: templates/shortcut.desktop.j2
+    dest: "/usr/share/applications/postman.desktop"
+    owner: "{{ postman_owner }}"
+    group: "{{ postman_group }}"
+    mode: 0755

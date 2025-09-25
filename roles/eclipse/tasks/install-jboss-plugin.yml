@@ -1,0 +1,7 @@
+---
+- name: eclipse | Install eclipse JBoss plugins
+  command: "/usr/local/eclipse/eclipse -nosplash \
+            -application org.eclipse.equinox.p2.director \
+            -destination /usr/local/eclipse \
+            -repository http://download.jboss.org/jbosstools/photon/stable/updates/ \
+            -installIU org.jboss.ide.eclipse.as.feature.feature.group"

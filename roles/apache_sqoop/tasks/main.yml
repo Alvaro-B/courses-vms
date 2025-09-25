@@ -1,0 +1,31 @@
+---
+# tasks file for apache-sqoop
+- name: Download sqoop
+  get_url:
+    url: http://archive.apache.org/dist/sqoop/{{ apache_sqoop_version }}/sqoop-{{ apache_sqoop_version }}.bin__hadoop-2.6.0.tar.gz
+    dest: /tmp/sqoop.tar.gz
+  register: result
+- name: Create destination dir
+  file:
+    path: "{{ apache_sqoop_base_path }}"
+    state: directory
+- name: Decompress sqoop
+  unarchive:
+    src: /tmp/sqoop.tar.gz
+    dest: "{{ apache_sqoop_base_path }}"
+    copy: no
+    extra_opts: [--strip-components=1]
+- file:
+    path: /tmp/sqoop.tar.gz
+    state: absent
+- name: download dependencies
+  get_url:
+    url: "{{ item }}"
+    dest: "{{ apache_sqoop_base_path }}/lib/"
+  loop:
+    - "https://repo1.maven.org/maven2/commons-lang/commons-lang/2.6/commons-lang-2.6.jar"
+    - "https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.22/mysql-connector-java-8.0.22.jar"
+- name: add to path
+  template:
+    src: templates/path_template.sh.j2
+    dest: /etc/profile.d/ansible_sqoop.sh

@@ -1,0 +1,4 @@
+---
+scala_mirror_url: https://downloads.lightbend.com
+scala_base_path: /usr/local/scala-{{ scala_version }}
+scala_base_name: SCALA

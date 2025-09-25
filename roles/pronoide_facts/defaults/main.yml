@@ -1,0 +1,5 @@
+---
+# Nombre del rol para generar el fact
+pronoide_facts_rolename: 
+# versión del rol para diferenciar si es una versión distinta
+pronoide_facts_version:

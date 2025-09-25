@@ -1,0 +1,5 @@
+---
+- name: Download NodeJS binary
+  yum: 
+    name: "{{ nodejs_url }}"
+    state: present

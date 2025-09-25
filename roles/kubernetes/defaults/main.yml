@@ -1,0 +1,5 @@
+---
+# defaults file for kubernetes
+kubernetes_user: vagrant
+kubernetes_installation: default
+install_crio: no

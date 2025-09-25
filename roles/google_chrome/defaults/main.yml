@@ -1,0 +1,5 @@
+---
+# defaults file for google_chrome
+chrome_owner: vagrant
+chrome_version: "110.0.5481.100"
+browser_configuration_files: no

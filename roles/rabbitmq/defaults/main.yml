@@ -1,0 +1,3 @@
+---
+# Todavia no esta disponible disco, en cuanto lo este, cambiaremos a variable de ansible
+ubuntu_distro: bionic

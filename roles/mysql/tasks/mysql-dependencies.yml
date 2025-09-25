@@ -1,0 +1,19 @@
+- name: Install dependencies for PyMySQL and Cryptography
+  yum:
+    name: 
+      - python2-PyMySQL
+      - python2-cryptography
+    state: present
+  when:
+  - ansible_distribution == "CentOS"
+  - ansible_distribution_major_version == "7" 
+    
+- name: Install python dependency to mysql module
+  dnf:
+    name: 
+      - python3-PyMySQL
+      - python3-cryptography
+    state: present
+  when:
+    - ansible_distribution == "CentOS"
+    - ansible_distribution_major_version == "8"

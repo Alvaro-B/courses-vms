@@ -1,0 +1,6 @@
+---
+- include_tasks: download-nodejs.yml
+  when:
+    - ansible_distribution == 'CentOS'
+    - ansible_distribution_major_version == "7"
+- include_tasks: install-nodejs.yml

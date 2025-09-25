@@ -1,0 +1,6 @@
+- name: Set anaconda fact
+  include_role:
+    name: pronoide_facts
+  vars:
+    pronoide_facts_rolename: anaconda
+    pronoide_facts_version: "{{ anaconda_version }}"

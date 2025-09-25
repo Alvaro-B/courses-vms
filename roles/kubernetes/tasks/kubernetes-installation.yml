@@ -1,0 +1,94 @@
+---
+# Configuración de maquina
+- name: Carga de modulo de kernel para configuración
+  modprobe:
+    name: br_netfilter
+    state: present
+
+- name: Define sysctl base changes
+  sysctl:
+    name: "{{ item }}"
+    value: "1"
+    state: present
+  loop:
+    - net.bridge.bridge-nf-call-ip6tables
+    - net.bridge.bridge-nf-call-iptables
+    - net.ipv4.ip_forward
+  tags:
+    - prerequisites
+    - system
+
+- name: Disable swap
+  block:
+    - name: Remove swapfile from /etc/fstab
+      mount:
+        name: swap
+        fstype: swap
+        state: absent
+      tags:
+        - prerequisites
+        - system
+    - name: Disable swap
+      command: swapoff -a
+      when: ansible_swaptotal_mb > 0
+      tags:
+        - prerequisites
+        - system
+  when:
+    - ansible_distribution != "Fedora"
+
+# Agregar repositorio
+- name: Add Kubernetes Repository
+  yum_repository:
+    name: Kubernetes
+    description: Repository for Kubernetes
+    baseurl: 'https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64'
+    gpgcheck: yes
+    gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+    enabled: yes
+  tags:
+    - prerequisites
+  when:
+    - ansible_distribution != "Fedora"
+
+# Instalación de kubernetes
+- name: Install kubernetes software CentOS 7
+  yum:
+    name:
+      - kubeadm
+      - kubectl
+      - kubelet
+      - kubernetes-cni
+    state: installed
+    disable_excludes: kube*
+  when:
+    - ansible_distribution == "CentOS"
+    - ansible_distribution_major_version == "7"
+
+- name: Install kubernetes software CentOS 8
+  dnf:
+    name:
+      - kubeadm
+    state: installed
+    disable_excludes: kube*
+  when:
+    - (ansible_distribution == "CentOS" and ansible_distribution_major_version == "8") or ansible_distribution == "Fedora"
+  tags:
+    - install
+
+- name: Install Kubernetes Fedora
+  dnf: 
+    name: "{{ item }}"
+  loop: 
+    - kubernetes-kubeadm 
+    - kubernetes-node 
+    - kubernetes-client 
+    - cri-tools 
+    - iproute-tc 
+    - container-selinux
+    
+- name: pull images from kubernetes
+  shell: kubeadm config images pull
+  tags:
+    - install
+  become_user: "{{ kubernetes_user }}"

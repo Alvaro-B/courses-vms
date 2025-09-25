@@ -1,0 +1,103 @@
+---
+- stat: path=/usr/local/hadoop-{{ hadoop_version }}
+  register: hadoop_path
+- name: copy hadoop to file
+  get_url:
+    url: http://apache.rediris.es/hadoop/common/hadoop-{{ hadoop_version }}/hadoop-{{ hadoop_version }}.tar.gz
+    dest: /tmp/hadoop-{{ hadoop_version }}.tar.gz
+  when: not hadoop_path.stat.exists
+- name: unarchive source
+  unarchive:
+    src: /tmp/hadoop-{{ hadoop_version }}.tar.gz
+    dest: /opt/
+    copy: no
+    owner: "{{ hadoop_owner }}"
+    group: "{{ hadoop_owner }}"
+  when: hadoop_path.stat.exists == False
+- file:
+    path: /tmp/hadoop-{{ hadoop_version }}.tar.gz
+    state: absent
+- name: add to path
+  template:
+    src: templates/hadoop_path.sh.j2
+    dest: /etc/profile.d/ansible_hadoop.sh
+- name: create directory datanode
+  file:
+    path: "{{ hadoop_base_path }}/hadoop_data/hdfs/{{ item }}"
+    state: directory
+    owner: "{{ hadoop_owner }}"
+    group: "{{ hadoop_owner }}"
+  loop:
+    - datanode
+    - namenode
+- name: .ssh directory exists
+  file:
+    path: /home/{{ hadoop_owner }}/.ssh/
+    state: directory
+    owner: "{{ hadoop_owner }}"
+    group: "{{ hadoop_owner }}"
+- name: Install openssh keypair
+  openssh_keypair:
+    path: /home/{{ hadoop_owner }}/.ssh/id_rsa
+  become_user: "{{ hadoop_owner }}"
+- name: get remote file contents
+  command: "cat /home/{{ hadoop_owner }}/.ssh/id_rsa.pub"
+  register: key
+  changed_when: false
+- name: Set authorized key taken from file
+  authorized_key:
+    user: "{{ hadoop_owner }}"
+    state: present
+    key: "{{ key.stdout }}"
+  become_user: "{{ hadoop_owner }}"
+- name: generate known host key
+  command: ssh-keyscan localhost
+  register: host_key
+  changed_when: false
+- name: tell the host about our servers it might want to ssh to
+  known_hosts:
+    path: /home/{{ hadoop_owner }}/.ssh/known_hosts
+    name: localhost
+    key: "{{ host_key.stdout }}"
+- name: set user and group of known_hosts
+  file:
+    path: /home/{{ hadoop_owner }}/.ssh/known_hosts
+    owner: "{{ hadoop_owner }}"
+    group: "{{ hadoop_owner }}"
+  register: result_known_hosts
+- import_tasks: configure-hadoop-cluster.yml
+- import_tasks: configure-yarn-cluster.yml
+- name: format hadoop namenode
+  shell: |
+    export JAVA_HOME=$(alternatives --list | grep jre_{{ hadoop_openjdk_version }}_openjdk | awk '{ print $3}')
+    export PATH=${PATH}:${JAVA_HOME}/bin
+    source /etc/profile.d/ansible_hadoop.sh
+    hadoop namenode -format
+    exit 0
+  become_user: "{{ hadoop_owner }}"
+  when: 
+    - result_known_hosts.changed
+    - hadoop_java_option == 'oracle'
+- name: format hadoop namenode
+  shell: |
+    export JAVA_HOME=$(alternatives --list | grep jre_{{ hadoop_openjdk_version }}_openjdk | awk '{ print $3}')
+    export PATH=${PATH}:${JAVA_HOME}/bin
+    source /etc/profile.d/ansible_hadoop.sh
+    hadoop namenode -format
+    exit 0
+  become_user: "{{ hadoop_owner }}"
+  when: 
+    - result_known_hosts.changed
+    - hadoop_java_option == 'openjdk'
+- name: Define java_home
+  shell: alternatives --list | grep jre_{{ hadoop_openjdk_version }}_openjdk | awk '{ print $3}'
+  register: java_home_result
+- name: create service hadoop
+  template:
+    src: hadoop.service.j2
+    dest: /etc/systemd/system/hadoop.service
+- name: start and enable hadoop
+  service:
+    name: hadoop
+    state: started
+    enabled: yes

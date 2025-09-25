@@ -1,0 +1,18 @@
+---
+# tasks file for adobe-acrobat-reader
+- name: Install adobe-acrobat-reader for Linux
+  block:
+    - name: install Adobe acrobat reader for Fedora native version
+      import_tasks: install_reader_linux_native.yml
+      when: 
+        - ansible_distribution == "Fedora"
+  when:
+    ansible_windows_domain is undefined
+
+- name: Install adobe-acrobat-reader for Windows
+  block:
+    - import_tasks: win-download-acrobat-reader.yml
+    - import_tasks: win-install-acrobat.yml
+  when:
+    ansible_windows_domain is defined
+    

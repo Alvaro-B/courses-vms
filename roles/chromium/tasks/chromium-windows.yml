@@ -1,0 +1,12 @@
+- name: Install chromium for Windows
+  win_chocolatey: 
+    name: chromium
+    state: latest
+- name: Ensure Chrome Default directory
+  win_file:
+    path: 'C:\Users\{{base_username}}\AppData\Local\Chromium\User Data\Default'
+    state: directory
+- name: Copy Default configuration files
+  win_copy:
+    src: Preferences
+    dest: 'C:\Users\{{base_username}}\AppData\Local\Chromium\User Data\Default'

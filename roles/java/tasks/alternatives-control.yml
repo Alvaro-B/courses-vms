@@ -1,0 +1,4 @@
+- name: correct java version selected
+  alternatives:
+    name: java
+    path: "{{ java_base_path }}/jre/bin/java"

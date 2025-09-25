@@ -1,0 +1,4 @@
+---
+# handlers file for adobe-acrobat-reader
+- name: load shared libraries
+  shell: ldconfig

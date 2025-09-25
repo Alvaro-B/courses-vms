@@ -1,0 +1,13 @@
+---
+# Versiones probadas: 4.4 y 5.0
+mongodb_version: 4.4
+# started y stopped. Se deja stopped y el servidor que lo instancia no cumple con los mínimos para iniciarlo.
+# Por microarquitectura: 
+# MongoDB requires the following minimum x86_64 microarchitectures: [2]
+# For Intel x86_64, MongoDB requires one of:
+#  a Sandy Bridge or later Core processor, or
+#  a Tiger Lake or later Celeron or Pentium processor.
+# For AMD x86_64, MongoDB requires:
+#  a Bulldozer or later processor.
+mongodb_started: started
+mongodb_enabled: yes

@@ -1,0 +1,10 @@
+---
+# vars file for postman
+postman_url: https://dl.pstmn.io/download/{{ postman_version }}/linux64
+postman_group: "{{ postman_owner }}"
+postman_system_path: /opt
+postman_shortcut_path: /home/{{postman_owner}}/Desktop
+shortcut_command: "{{ postman_system_path }}/Postman/Postman"
+shortcut_title: Postman
+shortcut_comment: Postman
+shortcut_icon: "{{ postman_system_path }}/Postman/app/resources/app/assets/icon.png"

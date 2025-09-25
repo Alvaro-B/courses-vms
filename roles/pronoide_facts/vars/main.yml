@@ -1,0 +1,3 @@
+---
+# vars file for pronoide_facts
+pronoide_facts_remote_dir: /etc/ansible/facts.d

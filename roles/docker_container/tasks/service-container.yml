@@ -1,0 +1,47 @@
+- name: start docker container
+  docker_container:
+    name: "{{ docker_container_name }}"
+    image: "{{ docker_image }}"
+    published_ports: "{{ docker_ports }}"
+    restart_policy: always
+    recreate: "{{ docker_recreate_container }}"
+    state: started
+    volumes: "{{ docker_volumes }}"
+    env: "{{ docker_env }}"
+    network_mode: "{{ docker_network_mode }}"
+  when: 
+    - (ansible_distribution == "CentOS" and not ansible_distribution_major_version == "7") or (ansible_distribution != "CentOS")
+- name: recreate container
+  shell:
+    cmd: docker rm -f {{ docker_container_name }}
+  when:
+    - ansible_distribution == 'CentOS'
+    - ansible_distribution_major_version == '7'
+    - docker_recreate_container
+- name: detect container
+  shell: docker ps -a
+  register: container_list
+- name: recalculate ports
+  set_fact:
+    docker_ports_string: -p {{ docker_ports | join(" -p ") }}
+  when:
+    - docker_ports | length != 0
+- name: recalculate volumes
+  set_fact:
+    docker_volumes_string: -v {{ docker_volumes | join(" -v ") }}
+  when:
+    - docker_volumes | length != 0
+- name: recalculate environment variables
+  set_fact:
+    docker_env_string: -e {{ docker_env.keys()| zip(docker_env.values())| map('join','="')| join('" -e ') }}"
+  when:
+    - docker_env | length != 0
+- debug:
+    msg: docker run -d {{ docker_ports_string | default("") }} --restart always {{ docker_volumes_string | default("") }} {{ docker_env_string | default("") }} --network={{ docker_network_mode }} --name {{ docker_container_name }} {{ docker_image }}
+- name: start docker container manually
+  shell: 
+    cmd: docker run -d {{ docker_ports_string | default("") }} --restart always {{ docker_volumes_string | default("") }} {{ docker_env_string | default("") }} --network={{ docker_network_mode }} --name {{ docker_container_name }} {{ docker_image }}
+  when:
+    - ansible_distribution == 'CentOS'
+    - ansible_distribution_major_version == '7'
+    - container_list.stdout.find(docker_container_name) == -1

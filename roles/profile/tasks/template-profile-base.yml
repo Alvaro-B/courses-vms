@@ -1,0 +1,5 @@
+---
+- name: Create file into /etc/profile.d
+  template:
+    src: templates/path_template.sh.j2
+    dest: "/etc/profile.d/{{ profile_software_name }}-{{ profile_software_version }}.sh" 

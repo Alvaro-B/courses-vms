@@ -1,0 +1,6 @@
+---
+spark_mirrors:
+  - https://archive.apache.org/dist/spark
+spark_apache_hive_path: /opt/apache-hive-{{ spark_apache_hive_version}}-bin
+spark_base_name: SPARK
+spark_base_path: /opt/spark-{{ spark_version }}-bin-hadoop{{ spark_hadoop_version }}

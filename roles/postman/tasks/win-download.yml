@@ -1,0 +1,5 @@
+- name: Download postman
+  win_get_url:
+    url: https://dl.pstmn.io/download/{{postman_version}}/win64
+    dest: C:\tmp\Postman-win64-Setup.exe
+

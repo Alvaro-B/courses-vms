@@ -1,0 +1,36 @@
+---
+# tasks file for pycharm
+- name: Download pycharm
+  get_url:
+    url: "{{ pycharm_url }}"
+    dest: /tmp/pycharm.tar.gz
+    owner: "{{ pycharm_owner }}"
+    group: "{{ pycharm_owner }}"
+- stat: path="/usr/local/pycharm"
+  register: pycharm_path
+- name: unarchive idea
+  unarchive:
+    src: /tmp/pycharm.tar.gz
+    dest: "{{ pycharm_system_path }}"
+    copy: no
+  when: pycharm_path.stat.exists == False
+- file:
+    path: /tmp/pycharm.tar.gz
+    state: absent
+- name: Move directory to a predecible path
+  shell: "mv /usr/local/pycharm-community-* /usr/local/pycharm"
+  when: pycharm_path.stat.exists == False
+- name: Desktop directory exists
+  file:
+    path: "{{ pycharm_shortcut_path }}"
+    state: directory
+    mode: 0755
+    owner: "{{ pycharm_owner }}"
+    group: "{{ pycharm_owner }}"
+- name: add shortcut
+  template:
+    src: templates/shortcut.desktop.j2
+    dest: "{{ pycharm_shortcut_path }}/pycharm.desktop"
+    owner: "{{ pycharm_owner }}"
+    group: "{{ pycharm_owner }}"
+    mode: 0740

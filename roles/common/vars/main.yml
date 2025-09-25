@@ -1,0 +1,132 @@
+---
+# vars file for common
+ubuntu_user_session: xfce
+
+distros:
+  Ubuntu21:
+    firewall_service: ufw
+    ntp_service: ntp
+    ntp_package: ntp
+    automatic_login_gdm_file: /etc/gdm3/custom.conf
+    software: []
+
+  Ubuntu24:
+    firewall_service: ufw
+    ntp_service: ntp
+    ntp_package: ntp
+    software: []
+
+  CentOS7:
+    firewall_service: firewalld
+    ntp_service: ntpd
+    ntp_package: ntp
+    automatic_login_gdm_file: /etc/gdm/custom.conf
+    software:
+      - epel-release 
+      - unzip
+
+  CentOS8:
+    firewall_service: firewalld
+    ntp_service: chronyd
+    ntp_package: chrony
+    automatic_login_gdm_file: /etc/gdm/custom.conf
+    software:
+      - epel-release 
+      - xorg-x11-server-utils
+
+  CentOS9:
+    firewall_service: firewalld
+    ntp_service: chronyd
+    ntp_package: chrony
+    automatic_login_gdm_file: /etc/gdm/custom.conf
+    software:
+      - epel-release 
+      - xorg-x11-server-utils
+      - python3-pip
+      - vim
+      - at
+
+  Fedora34:
+    firewall_service: firewalld
+    ntp_service: chronyd
+    ntp_package: chrony
+    software:
+      - gedit
+      - file-roller
+      - xrandr
+
+  Fedora35:
+    firewall_service: firewalld
+    ntp_service: chronyd
+    ntp_package: chrony
+    software:
+      - gedit
+      - file-roller
+
+  Fedora37:
+    firewall_service: firewalld
+    ntp_service: chronyd
+    ntp_package: chrony
+    software:
+      - gedit
+      - file-roller
+      - xrandr
+      - wmctrl
+      - python3-pip
+
+  Fedora39:
+    firewall_service: firewalld
+    ntp_service: chronyd
+    ntp_package: chrony
+    software:
+      - gedit
+      - file-roller
+      - xrandr
+      - wmctrl
+      - python3-pip
+
+  Fedora41:
+    firewall_service: firewalld
+    ntp_service: chronyd
+    ntp_package: chrony
+    software:
+      - gedit
+      - file-roller
+      - xrandr
+      - wmctrl
+      - python3-pip
+      
+base_software:
+  - "{{ distros[ansible_distribution + ansible_distribution_major_version].ntp_package }}"
+  - tree
+  - git
+  - telnet
+  - wget
+  - nano
+
+desktop_environment: xfce
+desktop_environment_user: vagrant
+desktop_environments:
+  gnome: 
+    package: "@^GNOME Desktop"
+    xsession: gnome
+  gnome-classic: 
+    package: "@^GNOME Desktop"
+    xsession: gnome-classic
+  kde: 
+    package: "@^KDE Plasma Workspaces"
+    xsession: 1-kde-plasma-standard
+  cinnamon:
+    package: "@^Cinnamon Desktop"
+    xsession: cinnamon
+  mate:
+    package: "@^MATE Desktop"
+    xsession: mate
+  xfce:
+    package: "@Xfce"
+    xsession: xfce
+
+windows_firewall_profiles: 
+  - Domain
+  - Private
+  - Public

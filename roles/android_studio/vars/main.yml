@@ -1,0 +1,9 @@
+---
+# vars file for android_studio
+android_studio_url: https://dl.google.com/dl/android/studio/ide-zips/{{ android_studio_version }}/android-studio-ide-{{ android_studio_compile_version}}-linux.tar.gz?hl=es
+android_studio_url_windows: https://dl.google.com/dl/android/studio/install/{{ android_studio_version }}/android-studio-ide-{{ android_studio_compile_version}}-windows.exe
+shortcut_command: /usr/local/android-studio/bin/studio.sh
+shortcut_title: Android Studio
+shortcut_comment: Desarrollo móvil con Android Studio
+shortcut_icon: /usr/local/android-studio/bin/studio.png
+android_studio_shortcut_path: /home/{{ android_studio_owner }}/Desktop

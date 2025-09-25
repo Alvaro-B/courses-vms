@@ -1,0 +1,6 @@
+- import_tasks: kubernetes-installation.yml
+  when:
+    - kubernetes_installation == "default"
+- import_tasks: kubernetes-installation-crio.yml
+  when:
+    - kubernetes_installation == "crio"

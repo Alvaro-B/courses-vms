@@ -1,0 +1,6 @@
+export {{ spark_base_name }}_HOME={{ spark_base_path }}
+export PATH=$PATH:${{ spark_base_name }}_HOME/bin
+export SPARK_DIST_CLASSPATH={{ spark_hadoop_classpath }}
+export PYSPARK_DRIVER_PYTHON=python3
+export PYTHONPATH=$SPARK_HOME/python:$PYTHONPATH
+export PYSPARK_PYTHON=python3

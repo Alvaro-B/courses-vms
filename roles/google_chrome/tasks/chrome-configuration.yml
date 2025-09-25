@@ -1,0 +1,110 @@
+##############################################
+# LINUX
+##############################################
+- name: Configure Chrome for Linux
+  block:
+    - name: Ensure google-chrome directory
+      file:
+        path: "{{item}}"
+        state: directory
+        owner: "{{base_username}}"
+        group: "{{base_username}}"
+      loop:
+        - /home/{{base_username}}/.config/google-chrome
+        - /home/{{base_username}}/Desktop
+    
+    - name: Unzip default.tgz
+      unarchive:
+        src: browser-files/Default.zip
+        dest: /home/{{base_username}}/.config/google-chrome
+        owner: "{{base_username}}"
+        group: "{{base_username}}"
+    
+    - name: Copy Chrome configuration files for Linux
+      copy:
+        src: browser-files/google-chrome.desktop
+        dest: "{{item}}"
+        owner: "{{base_username}}"
+        group: "{{base_username}}"
+        remote_src: no
+      loop:
+        - /home/{{base_username}}/Desktop
+        - /usr/share/applications
+
+    - name: Include configuration files in /etc/skel
+      include_role:
+        name: skeleton
+  when: 
+    - browser_configuration_files == true
+    - ansible_windows_domain is undefined
+
+##############################################
+# WINDOWS
+##############################################
+
+- name: Configure Chrome for Windows
+  block:
+    - name: Create sheduled task to run Chrome 
+      win_scheduled_task:
+        name: runChrome
+        actions:
+        - path: powershell
+          arguments: '&start chrome'
+        triggers:
+        - type: logon
+          user_id: "{{ base_username }}"
+        username: "{{ base_username }}"
+        disallow_start_if_on_batteries: false
+        run_level: highest
+        compatibility: 4
+        state: present
+        enabled: yes
+
+    - name: Reboot to run Chrome for the first time
+      win_reboot:
+
+    - name: Wait for Chrome run
+      win_wait_for_process:
+        process_name_exact: chrome
+        state: present
+        timeout: 500
+        sleep: 10
+
+    - name: Disable runChrome task
+      win_scheduled_task:
+        name: runChrome
+        enabled: no
+
+    - name: Stop Chrome
+      win_shell: 'taskkill /F /IM chrome.exe /T'
+      become_user: "{{base_username}}"
+      ignore_errors: true
+
+    - name: Ensure Chrome Default directory
+      win_file:
+        path: 'C:\Users\{{base_username}}\AppData\Local\Google\Chrome\User Data\Default'
+        state: directory
+
+    - name: Copy Default configuration files
+      win_copy:
+        src: browser-files/Preferences
+        dest: 'C:\Users\{{base_username}}\AppData\Local\Google\Chrome\User Data\Default'
+
+    - name: Copy First Run and Local State configuration files
+      win_copy:
+        src: browser-files/{{item}}
+        dest: 'C:\Users\{{base_username}}\AppData\Local\Google\Chrome\User Data\Default'
+      loop:
+        - "First Run"  
+        - "Local State"   
+    - name: Copy First Run and Local State configuration files
+      win_copy:
+        src: 'Local State'
+        dest: 'C:\Users\{{base_username}}\AppData\Local\Google\Chrome\User Data'
+    - name: Copy master_preferences configuration files
+      win_copy:
+        src: browser-files/master_preferences
+        dest: 'C:\Program Files\Google\Chrome\Application'
+  when: 
+    - browser_configuration_files == true
+    - ansible_windows_domain is defined

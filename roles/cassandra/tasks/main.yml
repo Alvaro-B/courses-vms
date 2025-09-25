@@ -1,0 +1,13 @@
+---
+- name: Creating Repository File
+  template:
+    src: templates/cassandra_repo.j2
+    dest: /etc/yum.repos.d/cassandra.repo
+- name: Installing Cassandra
+  dnf: 
+    name: cassandra
+    state: present
+- name: Enabling Cassandra
+  service:
+    name: cassandra
+    enabled: yes

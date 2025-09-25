@@ -1,0 +1,4 @@
+---
+# defaults file for profile
+docker_build_path: '/vagrant/provision/docker_build' 
+docker_image_name: 'docker-image'

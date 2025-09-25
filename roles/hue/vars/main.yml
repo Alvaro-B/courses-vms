@@ -1,0 +1,3 @@
+---
+# vars file for hue
+hue_db_name: hue_metadata

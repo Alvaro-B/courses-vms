@@ -1,0 +1,7 @@
+---
+# defaults file for apache-hive
+apache_hive_version: 3.1.2
+apache_hive_owner: vagrant
+apache_hive_hadoop_version: 3.2.1
+apache_hive_java_option: openjdk
+apache_hive_openjdk_version: 1.8.0

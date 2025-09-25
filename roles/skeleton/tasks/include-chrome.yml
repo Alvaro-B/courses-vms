@@ -1,0 +1,20 @@
+- name: Check Chrome version
+  shell: google-chrome --version
+  register: chrome_is_installed
+  failed_when: '"ERROR" in chrome_is_installed.stderr'
+
+- name: Copy Chrome configuration to skeleton
+  block:
+    - name: Ensure skeleton .config directory
+      file:
+        path: /etc/skel/.config
+        state: directory
+    - name: Copy Chrome configuration to skeleton
+      copy: 
+        src: /home/{{base_username}}/.config/google-chrome
+        dest: /etc/skel/.config
+        owner: root
+        group: root
+        remote_src: yes
+  when: 
+    - chrome_is_installed.stderr == ""

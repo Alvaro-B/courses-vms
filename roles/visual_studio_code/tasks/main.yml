@@ -1,0 +1,17 @@
+---
+# tasks file for visual_studio_code Linux
+- block:
+  - import_tasks: add-code-repository.yml
+  - import_tasks: install-visual-studio-code.yml
+  when: 
+  - ansible_windows_domain is undefined
+  
+# Install Visual Studio Code for Windows
+- name: Installing Visual Studio Code for Windows
+  win_chocolatey:
+    name: vscode
+    state: present
+    timeout: 300
+  when: 
+  - ansible_windows_domain is defined
+  

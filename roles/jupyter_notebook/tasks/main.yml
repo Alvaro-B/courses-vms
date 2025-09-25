@@ -1,0 +1,71 @@
+---
+# tasks file for jupyter_notebook
+- name: install jupyter
+  pip:
+    executable: pip3
+    name:
+      - jupyter
+      - notebook
+    extra_args: --user
+  become_user: "{{ jupyter_notebook_owner }}"
+- name: change PYSPARK_DRIVER_PYTHON to jupyter
+  lineinfile:
+    path: /etc/profile.d/ansible_spark.sh
+    regexp: "export PYSPARK_DRIVER_PYTHON"
+    line: 'export PYSPARK_DRIVER_PYTHON="jupyter"'
+  when:
+    - jupyter_notebook_pyspark
+    - jupyter_notebook_pyspark_auto
+- name: install spylon-kernel
+  pip:
+    executable: pip3
+    name: 
+      - spylon-kernel
+    extra_args: --user
+  become_user: "{{ jupyter_notebook_owner }}"
+  when:
+    - jupyter_notebook_pyspark    
+- name: add pyspark
+  lineinfile:
+    path: /etc/profile.d/ansible_spark.sh
+    regexp: '^export PYSPARK_DRIVER_PYTHON_OPTS'
+    insertafter: '^export PYSPARK_DRIVER_PYTHON="jupyter"'
+    line: export PYSPARK_DRIVER_PYTHON_OPTS='notebook'
+  when:
+    - jupyter_notebook_pyspark
+    - jupyter_notebook_pyspark_auto
+- name: install R Extension
+  block:
+    - name: Enable PowerTools CentOS 8
+      lineinfile:
+        path: /etc/yum.repos.d/CentOS-Linux-PowerTools.repo
+        regexp: '^enabled=0'
+        line: enabled=1
+      when:
+        - ansible_distribution == "CentOS"
+        - ansible_distribution_major_version == "8"
+    - name: Install R
+      yum:
+        name: R
+        state: installed
+    - name: create lib directory for user
+      file:
+        path: /home/{{ jupyter_notebook_owner }}/R/x86_64-redhat-linux-gnu-library/3.6
+        state: directory
+        owner: "{{ jupyter_notebook_owner }}"
+        group: "{{ jupyter_notebook_owner }}"
+        mode: "0744"
+    - name: Install R extension for jupyter
+      shell: | 
+        export PATH=$PATH:/usr/local/bin:${HOME}/.local/bin
+        R -f /vagrant/roles/jupyter_notebook/files/install_jupyter_deps.R
+      become_user: "{{ jupyter_notebook_owner }}"
+  when:
+    - jupyter_notebook_r
+- name: install spylon_kernel
+  shell: |
+    export PATH=$PATH:/usr/local/bin:${HOME}/.local/bin
+    python3 -m spylon_kernel install --user
+  become_user: "{{ jupyter_notebook_owner }}"
+  when:
+    - jupyter_notebook_pyspark

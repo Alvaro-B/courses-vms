@@ -1,0 +1,6 @@
+- name: Install Visual Studio Community for Windows
+  win_chocolatey:
+    name: visualstudio{{ visual_studio_version }}community
+    state: latest 
+  when: 
+  - ansible_windows_domain is defined

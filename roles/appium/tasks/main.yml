@@ -1,0 +1,37 @@
+---
+- name: create directory to download Appium
+  file:
+    path: /usr/local/appium
+    state: directory
+    owner: "{{ appium_owner }}"
+    group: "{{ appium_group }}"
+- name: Install appium
+  block:
+    - name: Descargar Appium en el escritorio
+      get_url:
+        url: "{{ appium_url }}"
+        dest: /usr/local/appium/appium.AppImage
+        owner: "{{ appium_owner }}"
+        group: "{{ appium_group }}" 
+        mode: u+x
+        timeout: 30
+- name: Download ico
+  get_url:
+    url: https://images.prismic.io/ionicframeworkcom/7384a5eb6426a934dbc06e8df31f767f7a2c76cd_appium-logo-png-transparent.png?auto=compress,format
+    dest: /usr/local/appium/Appium-Logo.jpg
+    owner: "{{ appium_owner }}"
+    group: "{{ appium_group }}" 
+- name: Desktop directory exists
+  file:
+    path: /home/{{ appium_owner}}/Desktop
+    state: directory
+    mode: 0755
+    owner: "{{ appium_owner }}"
+    group: "{{ appium_group }}"
+- name: add shortcut
+  template:
+    src: templates/shortcut.desktop.j2
+    dest: /home/{{ appium_owner}}/Desktop/appium.desktop
+    owner: "{{ appium_owner }}"
+    group: "{{ appium_group }}"
+    mode: 0740

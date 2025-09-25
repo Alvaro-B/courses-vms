@@ -1,0 +1,25 @@
+---
+# vars file for interfaces
+interfaces_base_distro:
+  Fedora34: 
+    - 'lo'
+    - 'enp0s3'
+
+  Fedora37: 
+    - 'lo'
+    - 'enp0s3'
+    - 'eth1'
+
+  Fedora39: 
+    - 'lo'
+    - 'enp0s3'
+    - 'eth1'
+
+  Fedora41: 
+    - 'lo'
+    - 'enp0s3'
+    - 'eth1'
+
+  CentOS8: 
+    - 'lo'
+    - 'enp0s3'

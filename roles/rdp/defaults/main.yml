@@ -1,0 +1,9 @@
+---
+# defaults file for rdp
+rdp_owner: vagrant
+rdp_principal:
+  - "{{rdp_owner}}"
+rdp_users: []
+
+    
+  

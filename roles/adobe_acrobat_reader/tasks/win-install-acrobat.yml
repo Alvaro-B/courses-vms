@@ -1,0 +1,4 @@
+- name: Install Adobe Acrobat Reader for Windows 10
+  win_package:
+    path: C:\tmp\AcroRdrDCx642200320282_es_ES.exe
+  when: ansible_distribution_major_version == "10"

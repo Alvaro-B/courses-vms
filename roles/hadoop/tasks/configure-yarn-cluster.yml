@@ -1,0 +1,14 @@
+- name: Configure mapred-site.xml
+  template:
+    src: "mapred-site.xml.j2"
+    dest: "{{ hadoop_base_path }}/etc/hadoop/mapred-site.xml"
+    owner: "{{ hadoop_owner }}"
+    group: "{{ hadoop_owner }}"
+    backup: yes
+- name: Copy yarn-site.xml to hadoop
+  copy:
+    src: yarn-site.xml
+    dest: "{{ hadoop_base_path }}/etc/hadoop/yarn-site.xml"
+    owner: "{{ hadoop_owner }}"
+    group: "{{ hadoop_owner }}"
+    backup: yes

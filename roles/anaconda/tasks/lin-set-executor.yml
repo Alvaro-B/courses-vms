@@ -1,0 +1,10 @@
+- name: Set executor anaconda navigator
+  template:
+    src: "{{ item }}.sh.j2"
+    dest: /home/{{ anaconda_owner }}/anaconda{{ anaconda_major_version }}/{{ item }}.sh
+    owner: "{{ anaconda_owner }}"
+    group: "{{ anaconda_group }}"
+    mode: 0740 
+  loop:
+    - navigator
+    - shell

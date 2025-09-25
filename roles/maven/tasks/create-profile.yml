@@ -1,0 +1,7 @@
+- name: Create variable path
+  include_role:
+    name: profile
+  vars:
+    profile_software_name: maven
+    profile_software_path: "{{ maven_base_path }}"
+    profile_software_version: "{{ maven_version }}"

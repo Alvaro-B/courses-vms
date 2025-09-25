@@ -1,0 +1,11 @@
+---
+# tasks file for pronoide_facts
+- name: Create Facts Dir on Managed Hosts
+  file:
+    path: "{{ pronoide_facts_remote_dir }}"
+    state: directory
+    recurse: yes
+- name: Set facts into machine
+  template:
+    src: template.fact.j2
+    dest: "{{ pronoide_facts_remote_dir }}/{{ pronoide_facts_rolename }}.fact"

@@ -1,0 +1,14 @@
+[Unit]
+Description=Hive service
+After=hadoop.service
+
+[Service]
+Type=notice
+User={{ apache_hive_owner }}
+Group={{ apache_hive_owner  }}
+Environment="JAVA_HOME={{ java_home_result.stdout }}"
+Environment="HADOOP_HOME=/opt/hadoop-{{ apache_hive_hadoop_version }}"
+ExecStart={{ apache_hive_base_path }}/apache-hive-{{ apache_hive_version }}-bin/bin/hive --service metastore
+
+[Install]
+WantedBy=multi-user.target

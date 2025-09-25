@@ -1,0 +1,9 @@
+---
+# vars file for pycharm
+pycharm_system_path: /usr/local
+pycharm_url: https://download-cf.jetbrains.com/python/pycharm-community-{{ pycharm_version }}.tar.gz
+shortcut_command: "{{ pycharm_system_path }}/pycharm/bin/pycharm.sh"
+shortcut_title: PyCharm
+shortcut_comment: IDE Python for Developers
+shortcut_icon: "{{ pycharm_system_path }}/pycharm/bin/pycharm.svg"
+pycharm_shortcut_path: /home/{{ pycharm_owner }}/Desktop

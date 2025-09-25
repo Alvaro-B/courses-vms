@@ -1,0 +1,14 @@
+---
+- name: Install Google Chrome for Linux
+  package:
+    name: google-chrome-stable
+    state: present
+  when: ansible_windows_domain is undefined
+
+- name: Install Google Chrome for Windows
+  win_chocolatey:
+    name: googlechrome
+    version: "{{chrome_version}}"
+    state: present
+    ignore_checksums: true
+  when: ansible_windows_domain is defined

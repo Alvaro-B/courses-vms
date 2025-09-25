@@ -1,0 +1,59 @@
+- name: Create group {{ username }}
+  group:
+    name: "{{ username }}"
+    state: present
+
+- name: Create user {{ username }}
+  user:
+    name: "{{ username }}" 
+    state: present
+    password: "{{ username | password_hash('sha512', 'pronoide') }}"
+    shell: /bin/bash
+    group: "{{ username }}"
+
+- name: autologin graphical.target CentOS
+  blockinfile:
+    path: "{{ distros[ansible_distribution + ansible_distribution_major_version].automatic_login_gdm_file }}" 
+    insertafter: daemon 
+    content: | 
+      AutomaticLogin={{ username }}
+      AutomaticLoginEnable=True
+  when: 
+    - default_runlevel.stdout == 'graphical.target'
+    - ansible_distribution == 'CentOS'
+    - autologin == true
+
+- name: set default desktop {{ desktop_environments[desktop_environment].xsession}} for Ubuntu
+  template:
+    src: lightdm.conf.j2
+    dest: /etc/lightdm/lightdm.conf.d/50-autologin.conf
+    owner: root
+    group: root
+    mode: 0644
+  when: 
+    - ansible_distribution == 'Ubuntu'
+    - default_runlevel.stdout == 'graphical.target'
+
+- name: Set default desktop for Fedora
+  block:
+    - name: Check if lightdm is installed
+      stat:
+        path: /etc/lightdm/lightdm.conf
+      register: lightdm_exist
+
+    - name: Set autologin user for Fedora default desktop
+      lineinfile:
+        path: /etc/lightdm/lightdm.conf 
+        insertafter: Seat 
+        regexp: "#autologin-user="
+        line: autologin-user={{ username }}
+      when: lightdm_exist.stat.exists
+  when: 
+    - default_runlevel.stdout == 'graphical.target'
+    - ansible_distribution == 'Fedora'
+    - autologin == true
+    
+- name: passwordless sudo
+  lineinfile:
+    path: /etc/sudoers
+    line: "{{ username }} ALL=(ALL) NOPASSWD: ALL"

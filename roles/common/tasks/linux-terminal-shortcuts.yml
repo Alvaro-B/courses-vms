@@ -1,0 +1,14 @@
+- name: Create directories for shortcuts in /etc/skel
+  file:
+    path: /etc/skel/.config/xfce4/terminal/
+    owner: root
+    group: root
+    state: directory
+
+- name: Copy accels.scm
+  copy:
+    src: accels.scm
+    dest: /etc/skel/.config/xfce4/terminal/
+    owner: root
+    group: root
+    remote_src: no

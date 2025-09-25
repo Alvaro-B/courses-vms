@@ -1,0 +1,11 @@
+- name: get java openjdk path
+  shell: "alternatives --list | grep jre_{{ eclipse_openjdk_version }}_openjdk | awk '{ print $3}'"
+  register: path_openjdk
+- name: Update java used to start eclipse
+  blockinfile:
+    path: /usr/local/eclipse/eclipse.ini
+    block: |
+      -vm
+      {{ path_openjdk.stdout }}/bin/java
+    insertbefore: BOF 
+    

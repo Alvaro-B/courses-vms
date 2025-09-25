@@ -1,0 +1,12 @@
+- name: Check if {{ item }} exists
+  stat:
+    path: /etc/xdg/autostart/{{ item }}
+  register: file_stat
+
+- name: Modify {{ item }} to disable autorun in login
+  lineinfile:
+    path: /etc/xdg/autostart/{{ item }}
+    line: 'Hidden=true'
+    insertafter: EOF
+  when: 
+    - file_stat.stat.exists

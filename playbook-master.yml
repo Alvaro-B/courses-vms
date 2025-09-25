@@ -1,0 +1,224 @@
+---
+- name: Playbook curso 
+  hosts: all
+  become: true
+  vars:
+    # Nombre usuario
+    base_username: alumno
+
+    # Extra software
+    extras:
+      - cmake
+      - gcc-c++
+
+    # Definir SW máquina
+    common_conf: yes 
+    browsers: yes 
+    vsc: yes 
+    nodejs: no 
+    docker: no
+    eclipse: no
+    pycharm: no
+    jupyter: no
+    maven: no
+    postman: no
+    copy_workspace: no
+    rdp: no 
+
+    # Versiones
+    java_main_version: 21
+    docker_compose_version: v2.39.4
+    eclipse_rel: '2025-03'
+    eclipse_v: 'R'
+    node_version: 22
+    pycharm_v: '2025.2.2'
+    maven_v: 3.9.11
+    tomcat_version: 9.0.84
+    tomcat_major_version: 9
+
+  tasks:
+    - name: Desisntalar plymouth
+      dnf:
+        name: plymouth*
+        state: absent
+      when: 
+        - ansible_distribution_major_version == '41'
+        - ansible_distribution == 'Fedora'
+
+    # Este rol es obligatorio para para firewall, selinux e instalar software básico para los cursos
+    - name: Configuración comun
+      include_role:
+        name: common
+      vars:
+        # Poner a true si se desea definir una nueva url del repositorio fedora.repo y fedora-updates.repo
+        change_mirror: no
+        # Definir cabecera de la url del repositorio que queremos usar
+        # {{ mirror }}/updates/$releasever/Everything/$basearch/
+        # {{ mirror }}/releases/$releasever/Everything/$basearch/os/
+        mirror: https://fr2.rpmfind.net/linux/fedora/linux 
+        username: "{{ base_username }}"
+        # Opciones: [ enforcing | permissive | disabled ]
+        # Si no definimos la variable, se considera disabled.
+        common_selinux_state: disabled
+        # Esta opción solo es necesaria para deshabilitar de forma permanente 
+        # el área de intercambio en la distribución Fedora
+        disable_zram: false
+        # Variable opcional para cursos que necesiten paquetes de instalación especiales
+        extra_software: []
+        # Variable para no desinstalar gnome-keyring, por defecto a true
+        disable_keyring: yes
+      when: common_conf 
+
+    - block:
+        - name: Instalación de Firefox
+          include_role:
+            name: firefox
+          vars:
+            browser_configuration_files: no # Configuracion personalizada del navegador
+        
+        - name: Instalación de Google Chrome
+          include_role:
+            name: google_chrome
+          vars:
+            chrome_owner: "{{ base_username }}"
+            browser_configuration_files: no
+      when: browsers
+    
+    - name: Instalación de Visual Studio Code
+      include_role:
+        name: visual_studio_code
+      when: vsc
+
+    - name: Instalación de Node JS
+      include_role:
+        name: nodejs
+      vars:
+        nodejs_version: "{{ node_version }}"
+      when: nodejs
+
+    - name: Instalar Docker
+      include_role:
+        name: docker
+      vars:
+        docker_authorized_user: "{{ base_username }}"
+        docker_compose_install: true
+        docker_compose_version: "{{ docker_compose_version }}"
+      when: docker
+
+    # Descarga e instala el eclipse para cualquier versión. Solo necesitamos indicar la release que queremos.
+    - name: Instalación de Eclipse
+      include_role:
+        name: eclipse
+      vars:
+        eclipse_release: "{{ eclipse_rel }}" 
+        eclipse_owner: "{{ base_username }}"
+        # Si necesitamos cualquier plugin de estos tres, se definen a true y se instalan automáticamente. Solo se han probado en versiones modernas de eclipse.
+        install_oepe: false
+        install_jboss_tools: false
+        # Pasa los parámetros al rol de java.
+        # El eclipse 2020 no admite java 8
+        eclipse_java_option: openjdk
+        eclipse_openjdk_version: "{{ java_main_version }}"
+        eclipse_version: "{{eclipse_v}}"
+      when: eclipse
+
+    - name: Instalar PyCharm
+      include_role:
+        name: pycharm
+      vars:
+        pycharm_version: "{{ pycharm_v }}"
+        pycharm_owner: "{{ base_username }}"
+      when: pycharm
+
+    - name: Rol jupyter notebook
+      include_role:
+        name: jupyter_notebook
+      vars:
+        jupyter_notebook_owner: "{{ base_username }}"
+        jupyter_notebook_r: false
+        jupyter_notebook_pyspark: true
+        jupyter_notebook_pyspark_auto: false
+      when: jupyter
+
+    - name: Instalación de maven
+      include_role:
+        name: maven
+      vars:
+        maven_version: "{{ maven_v }}" 
+        maven_java_option: openjdk
+        maven_openjdk_version: "{{ java_main_version }}"
+      when: maven
+
+    - name: Instalación de Postman
+      include_role:
+        name: postman
+      vars:
+        postman_version: latest
+        postman_owner: "{{ base_username }}"
+      when: postman
+
+
+    # Instalación de RDP 
+    # Permite abrir el puerto 3389 de la maquina virtual para conexión remota por RDP
+    # Para que funcione hay que abrir el puerto en Virtualbox:
+    #  - Se puede ir a network->nat->advanced->forwarded-ports y agregarlo a mano
+    #    name: rdp host_port: 3389 guest_port: 3389 - No hace falta rellenar más secciones. Ya funciona con eso.
+    #  - Se puede agregar en el Vagrantfile la directiva: 
+    #    config.vm.network "forwarded_port", guest: 3389, host: 3389
+    # Es necesario reiniciar la instancia o iniciar sesión una vez para conectarse en remoto.
+    - name: Instalar RDP
+      include_role:
+        name: rdp
+      vars:
+        rdp_owner: "{{ base_username }}"
+        # Los usuarios RDP indican las cuentas que se crearán con acceso a RDP. Esta variable es opcional. 
+        # El rdp_owner se agrega a la lista por defecto internamente por retrocompatibilidad.
+        rdp_users: []
+      when: rdp
+
+    - name: Copiar workspace
+      copy:
+        src: /vagrant/workspace
+        dest: /home/{{ base_username }}
+        owner: "{{ base_username }}"
+        group: "{{ base_username }}"
+        mode: '0755'
+        remote_src: yes
+      when: copy_workspace
+
+    # - name: Ensure download directory
+    #   file:
+    #     path: /home/{{ base_username }}/Downloads
+    #     owner: "{{ base_username }}"
+    #     group: "{{ base_username }}"
+    #     state: directory
+    #     mode: 0755
+
+    # # Descarga Apache Tomcat y lo deja comprimido en Downloads
+    # - name: Download software
+    #   get_url:
+    #     url: "{{ item }}"
+    #     dest: /home/{{ base_username }}/Downloads
+    #     owner: "{{ base_username }}"
+    #     group: "{{ base_username }}"
+    #     mode: 0755
+    #   loop:
+    #     - https://dlcdn.apache.org/tomcat/tomcat-{{ tomcat_major_version }}/v{{tomcat_version}}/bin/apache-tomcat-{{tomcat_version}}.tar.gz
+
+    # # Instalación de mysql y mysql workbench como paquete. 
+    # - name: Instalación de mysql
+    #  include_role:
+    #    name: mysql
+    #  vars:
+    #    # Ignorado en centos7, ya que solo hay hasta la 8.0.22-1
+    #    mysql_workbench_version: 8.0.33
+    #    # opciones probadas 5.7 y 8.0
+    #    mysql_version: 8.0
+    #    mysql_username: "{{ base_username }}"
+    #    mysql_password: "{{ base_username }}"
+    #    mysql_dockerized: true
+    #    mysql_native_shell_client: true
+    #    mysql_client: "dbeaver"
+
+   
+    

@@ -1,0 +1,27 @@
+- name: Acelerar instalacion
+  yum:
+    name: yum-plugin-fastestmirror
+    state: installed
+
+- name: Instalar clave
+  rpm_key:
+    state: present
+    key: https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+
+# Ojo, hay que instalar las tools a mano al reiniciar para que funcione
+- name: Instalar elrepo
+  yum:
+    name: https://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
+    state: present
+
+- name: Instalar kernel nuevo
+  yum:
+    name: "{{ item }}"
+    enablerepo: elrepo-kernel
+    state: installed
+  loop:
+    - kernel-ml
+    - kernel-ml-devel
+    
+- name: Cambiar kernel por defecto al nuevo
+  command: /usr/sbin/grub2-set-default 0

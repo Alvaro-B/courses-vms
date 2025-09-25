@@ -1,0 +1,105 @@
+---
+- name: Download spark
+  get_url:
+    url: "{{ spark_mirrors|random }}/spark-{{spark_version}}/spark-{{spark_version}}-bin-hadoop{{ spark_hadoop_version }}.tgz"
+    dest: /tmp/spark-{{spark_version}}-bin-hadoop{{ spark_hadoop_version }}.tgz
+  register: result
+  until: result is succeeded
+  retries: 5
+  delay: 2
+
+- name: Decompress spark
+  unarchive:
+    src: /tmp/spark-{{spark_version}}-bin-hadoop{{ spark_hadoop_version }}.tgz
+    dest: /opt/
+    copy: no
+    creates: /opt/spark-{{spark_version}}-bin-hadoop{{ spark_hadoop_version }}
+
+- file:
+    path: /tmp/spark-{{spark_version}}-bin-hadoop{{ spark_hadoop_version }}.tgz
+    state: absent
+
+- name: Generate hadoop classpath
+  shell: |
+    export JAVA_HOME=$(alternatives --list | grep jre_{{ spark_openjdk_version }}_openjdk | awk '{ print $3}')
+    export PATH=${PATH}:${JAVA_HOME}/bin
+    source /etc/profile.d/ansible_hadoop.sh
+    hadoop classpath
+  register: hadoop_classpath
+
+- name: set path to new variable
+  set_fact:
+    spark_hadoop_classpath: "{{ hadoop_classpath.stdout }}"
+
+- name: add to path
+  template:
+    src: templates/path_template.sh.j2
+    dest: /etc/profile.d/ansible_spark.sh
+
+- name: install deps
+  yum:
+    name:
+      - gcc
+      - make
+      - perl
+      - python3-devel
+    state: installed
+
+- name: install deps
+  yum:
+    name:
+      - llvm9.0
+      - llvm9.0-devel
+    state: installed
+  when:
+    - ansible_distribution == "CentOS"
+    - ansible_distribution_major_version == "7"
+    
+# - name: upgrade pip
+#   pip:
+#     executable: pip3
+#     name:
+#       - pip
+#     extra_args: --upgrade
+
+- name: add pyspark
+  pip:
+    executable: pip3
+    name:
+      - pyspark
+
+- name: add complements
+  pip:
+    executable: pip3
+    name:
+      - ipython
+      - numpy
+      - holoviews
+      - matplotlib
+      - argcomplete
+      - argh
+      - asn1crypto
+      - scipy
+      - statsmodels
+      - pandas_datareader
+      - findspark
+      - xlrd
+      - openpyxl
+      - seaborn
+      - xarray
+      - datashader
+      - keras
+    extra_args: --user
+  become_user: "{{ spark_owner }}"
+  when: spark_complements
+
+- name: create symlink for hive-site.xml
+  file:
+    src: "{{ spark_apache_hive_path }}/conf/hive-site.xml"
+    dest: "{{ spark_base_path }}/conf/hive-site.xml"
+    state: link
+    owner: "{{ spark_owner }}"
+    group: "{{ spark_owner }}"
+  when:
+    - spark_apache_hive_integration
+  

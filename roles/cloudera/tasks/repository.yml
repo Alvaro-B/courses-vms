@@ -1,0 +1,9 @@
+- name: Download file cloudera-manager.repo
+  get_url:
+    url: http://archive-primary.cloudera.com/cm5/redhat/7/x86_64/cm/cloudera-manager.repo 
+    dest: /etc/yum.repos.d/cloudera-manager.repo
+- name: Replace cloudera-manager version
+  replace:
+    path: /etc/yum.repos.d/cloudera-manager.repo
+    regexp: 'cm/5/'
+    replace: "cm/{{ cloudera_version }}/"

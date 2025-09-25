@@ -1,0 +1,9 @@
+---
+# vars file for ganache
+ganache_group: "{{ ganache_owner }}"
+ganache_url: "https://github.com/trufflesuite/ganache-ui/releases/download/v{{ ganache_version }}/ganache-{{ ganache_version }}-linux-x86_64.AppImage"
+ganache_url_ico: "https://raw.githubusercontent.com/trufflesuite/ganache-ui/develop/build/appx/SmallTile.scale-150.png"
+shortcut_command: /usr/local/ganache/ganache.AppImage --no-sandbox
+shortcut_title: Ganache-{{ ganache_version }}
+shortcut_comment: Ganache {{ ganache_version }}
+shortcut_icon: /usr/local/ganache/Ganache-Logo.png

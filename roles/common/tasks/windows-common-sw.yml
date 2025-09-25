@@ -1,0 +1,15 @@
+- name: Install Windows common software
+  win_chocolatey:
+    name: '{{ item }}'
+    state: present
+    timeout: 300
+  loop:
+    - 7zip
+    - git
+
+- name: Install Windows extra software
+  win_chocolatey:
+    name: '{{ item }}'
+    state: latest
+    timeout: 300
+  loop: "{{ extra_software }}" 

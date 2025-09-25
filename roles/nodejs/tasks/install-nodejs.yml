@@ -1,0 +1,53 @@
+---
+- name: CentOS 7 - Install NodeJS
+  package:
+    name: "{{ package_name }}"
+    state: present
+  when:
+    - ansible_distribution == 'CentOS'
+    - ansible_distribution_major_version == "7"
+
+- name: CentOS 8 - Install NodeJS
+  dnf:
+    name: '@{{ package_name }}:{{ nodejs_version }}'
+  when:
+    - (ansible_distribution == 'CentOS' and ansible_distribution_major_version == "8")
+    
+- block:
+    - name: Instalar dependencias necesarias
+      dnf:
+        name:
+          - curl
+          - gcc-c++
+          - make
+        state: present
+
+    - name: Añdir repositorio de NodeSource para Fedora
+      shell: |
+        curl -fsSL https://rpm.nodesource.com/setup_{{ nodejs_version }}.x | bash -
+      args:
+        executable: /bin/bash
+
+    - name: Instalar Node.js versión {{ nodejs_version }}
+      dnf:
+        name: nodejs
+        state: present
+  when:
+    - ansible_distribution == 'Fedora' and  nodejs_version != 'default'
+  rescue:
+    - name: Fedora - Install default NodeJS
+      dnf:
+        name: 
+          - nodejs 
+          - npm
+        state: present
+
+
+- name: Fedora - Install default NodeJS
+  dnf:
+    name: 
+      - nodejs 
+      - npm
+    state: present
+  when:
+    - ansible_distribution == 'Fedora' and  nodejs_version == 'default'

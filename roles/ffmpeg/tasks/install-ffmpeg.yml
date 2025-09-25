@@ -1,0 +1,16 @@
+- name: Install ffmpeg
+  package:
+    name: "{{item}}"
+    state: "installed"
+  loop:
+    - ffmpeg
+    - ffmpeg-devel
+  when:
+    - ansible_windows_domain is undefined
+    - ansible_distribution == "Fedora" or ansible_distribution == "CentOS"
+
+- name: "Install ffmpeg"
+  win_chocolatey:
+    name: "ffmpeg"
+    state: "present"
+  when: ansible_windows_domain is defined

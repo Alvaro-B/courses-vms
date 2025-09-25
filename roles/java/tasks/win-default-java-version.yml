@@ -1,0 +1,19 @@
+- block:
+  - name: Set JAVA_HOME
+    win_environment:
+      level: machine
+      name: JAVA_HOME
+      state: present
+      value: C:\\java\java_{{ java_openjdk_version }}\jdk-{{ java_openjdk_version }}\bin
+    notify: 
+      - Reboot to set environment variable JAVA_HOME
+  - name: Set PATH
+    win_path:
+      scope: machine
+      elements: '%JAVA_HOME%'
+  when:
+   - java_set_default == true
+
+    
+
+

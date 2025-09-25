@@ -1,0 +1,24 @@
+---
+# tasks file for rstudio
+- name: install R and RStudio
+  yum:
+    name:
+      - libcurl-devel
+      - libxml2-devel
+      - openssl-devel
+      - R
+      - https://download1.rstudio.org/desktop/centos8/x86_64/rstudio-{{ rstudio_version }}-x86_64.rpm
+    state: installed
+    disable_gpg_check: yes
+- name: create lib directory for user
+  file:
+    path: /home/{{ rstudio_owner }}/R/x86_64-redhat-linux-gnu-library/3.6
+    state: directory
+    owner: "{{ rstudio_owner }}"
+    group: "{{ rstudio_owner }}"
+    mode: "0744"
+- name: Install R packages
+  shell: | 
+    export PATH=$PATH:/usr/local/bin:${HOME}/.local/bin
+    R -f /vagrant/roles/rstudio/files/install_deps.R
+  become_user: "{{ rstudio_owner }}"

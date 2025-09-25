@@ -1,0 +1,6 @@
+---
+# defaults file for soapui
+soapui_version: 5.6.0
+soapui_owner: vagrant
+soapui_java_option: openjdk
+soapui_openjdk_version: 11

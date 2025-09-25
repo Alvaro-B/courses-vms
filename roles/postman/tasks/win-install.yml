@@ -1,0 +1,7 @@
+- name: Install Postman
+  win_package:
+    path: C:\tmp\Postman-win64-Setup.exe
+    state: present
+    arguments:
+      - /s
+

@@ -1,0 +1,8 @@
+---
+shortcut_command: /usr/local/idea/bin/idea.sh
+shortcut_title: IntelliJ IDEA Community Edition
+shortcut_comment: Capable and Ergonomic IDE for JVM
+idea_system_path: /usr/local
+idea_shortcut_path: /home/{{ idea_owner }}/Desktop
+# idea_url: "https://download-cf.jetbrains.com/idea/ideaIC-{{ idea_version }}-no-jbr.tar.gz"
+idea_url: "https://download.jetbrains.com/idea/ideaIU-{{ idea_version }}.tar.gz"

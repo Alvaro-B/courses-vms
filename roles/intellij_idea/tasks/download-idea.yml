@@ -1,0 +1,8 @@
+---
+- name: Download idea
+  get_url:
+    url: "{{ idea_url }}"
+    dest: /tmp/idea.tar.gz
+    owner: "{{ idea_owner }}"
+    group: "{{ idea_owner }}"
+    timeout: 30

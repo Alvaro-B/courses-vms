@@ -1,0 +1,9 @@
+---
+# vars file for rdp
+rdp_port: 3389
+rdp_group: "{{ rdp_owner }}"
+
+# vars windows rdp
+windows_rdp_group: Usuarios de escritorio remoto
+
+

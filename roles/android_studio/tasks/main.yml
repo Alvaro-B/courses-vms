@@ -1,0 +1,12 @@
+- name: Linux Android Studio 
+  block:
+    - import_tasks: lin-unarchive-source.yml
+    - import_tasks: lin-shortcut.yml
+  when:
+    - ansible_windows_domain is undefined
+
+- name: Windows Android Studio 
+  block:
+    - import_tasks: win-install.yml
+  when:
+    - ansible_windows_domain is defined

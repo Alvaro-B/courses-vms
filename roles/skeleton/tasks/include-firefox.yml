@@ -1,0 +1,14 @@
+- name: Check Firefox version
+  shell: firefox --version
+  register: firefox_is_installed
+  failed_when: '"ERROR" in firefox_is_installed.stderr'
+
+- name: Copy firefox configuration to skeleton
+  copy: 
+    src: /home/{{base_username}}/.mozilla
+    dest: /etc/skel
+    owner: root
+    group: root
+    remote_src: yes
+  when: 
+    - firefox_is_installed.stderr == ""

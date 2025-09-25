@@ -1,0 +1,5 @@
+---
+# defaults file for profile
+docker_authorized_user: vagrant
+docker_compose_install: true 
+

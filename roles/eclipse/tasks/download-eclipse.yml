@@ -1,0 +1,17 @@
+---
+- block:
+    - name: Download eclipse
+      get_url:
+        url: "{{ eclipse_final_url }}"
+        dest: /tmp/eclipse.tar.gz
+        owner: "{{ eclipse_owner }}"
+        group: "{{ eclipse_owner }}"
+        timeout: 30
+  rescue:
+    - name: Download eclipse
+      get_url:
+        url: "{{ eclipse_alternative_final_url }}"
+        dest: /tmp/eclipse.tar.gz
+        owner: "{{ eclipse_owner }}"
+        group: "{{ eclipse_owner }}"
+        timeout: 30

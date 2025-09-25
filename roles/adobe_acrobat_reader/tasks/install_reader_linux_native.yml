@@ -1,0 +1,28 @@
+- name: install dependencies
+  dnf:
+    name: "{{ item }}"
+    state: installed
+  loop: "{{ adobe_acrobat_reader_dependencies }}"
+
+- name: extract rpm name
+  shell: rpm -qa PackageKit-gtk3-module |grep x86_64 | awk '{split($0,a,"-");split(a[5],b,".");print "https://kojipkgs.fedoraproject.org//packages/PackageKit/" a[4] "/" b[1] "." b[2] "/i686/PackageKit-gtk3-module-" a[4] "-" b[1] "." b[2] ".i686.rpm"}'
+  register: extra_package
+  changed_when: false
+
+- name: install extra package
+  dnf:
+    name: "{{ extra_package.stdout }}"
+    state: installed
+    disable_gpg_check: yes
+
+- name: Install adobe acrobat reader
+  shell: 
+    cmd: rpm -Uvh --nodeps http://ardownload.adobe.com/pub/adobe/reader/unix/9.x/9.5.5/enu/AdbeRdr9.5.5-1_i486linux_enu.rpm
+    creates: /usr/bin/acroread
+    
+- name: copy acroread.conf to /etc/ld.so.conf.d
+  copy:
+    src: acroread.conf
+    dest: /etc/ld.so.conf.d/
+  notify:
+    - load shared libraries

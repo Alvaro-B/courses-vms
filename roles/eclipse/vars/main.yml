@@ -1,0 +1,14 @@
+---
+# vars file for profile
+eclipse_oepe_repos:
+  - http://download.oracle.com/otn_software/oepe/12.2.1.8/oxygen/repository/
+  - http://download.oracle.com/otn_software/oepe/12.2.1.8/oxygen/repository/dependencies/
+eclipse_oepe:
+  - oracle.eclipse.tools.javaee.feature.group
+  - oracle.eclipse.tools.maven.feature.group
+  - oracle.eclipse.tools.weblogic.scripting.feature.group
+  - oracle.eclipse.tools.weblogic.feature.group
+eclipse_rad_repos:
+  - pendiente
+eclipse_rad:
+  - http://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/wasdev/updates/wdt/photon_comp/

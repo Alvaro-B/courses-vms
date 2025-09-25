@@ -1,0 +1,26 @@
+- name: Linux eclipse
+  block:
+    - import_tasks: download-eclipse.yml
+    - import_tasks: unarchive-eclipse.yml
+    - import_tasks: shortcut-eclipse.yml
+    - import_tasks: configure-java-version.yml
+    - import_tasks: install-oepe.yml
+      when: install_oepe|bool
+    - import_tasks: install-jboss-plugin.yml
+      when: install_jboss_tools|bool
+    - import_tasks: install-sts.yml
+      when: install_sts|bool
+    - name: delete temp
+      file:
+        name: eclipse.tar.gz
+        state: absent
+  when:
+    - ansible_windows_domain is undefined
+
+- name: Windows eclipse
+  block:
+    - import_tasks: win-download-eclipse.yml
+    - import_tasks: win-unarchive-eclipse.yml
+    - import_tasks: win-eclipse-shortcut.yml
+  when:
+    - ansible_windows_domain is defined

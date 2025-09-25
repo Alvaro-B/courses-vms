@@ -1,0 +1,13 @@
+- name: Copy background image from local resources
+  copy:
+    src: files/{{ background_image }}
+    dest: /usr/share/backgrounds/images/default.png
+    remote_src: no
+  when: image_url == false
+
+- name: Copy background image from URL
+  get_url:
+    url: "{{ image_url }}"
+    dest: /usr/share/backgrounds/images/default.png
+    mode: 0644
+  when: image_url 

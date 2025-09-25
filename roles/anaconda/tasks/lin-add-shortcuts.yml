@@ -1,0 +1,29 @@
+- name: Register navigator icon path
+  shell: find /home/{{ base_username }}/anaconda{{ anaconda_major_version }}/pkgs/anaconda-navigator* -name anaconda-icon-256x256.png
+  register: anaconda_icon
+
+- name: set desktop shortcut for anaconda navigator
+  include_role:
+    name: desktop_shortcut
+  vars:
+    desktop_shortcut_image_path: "{{ anaconda_icon.stdout }}"
+    desktop_shortcut_filename: anaconda-navigator
+    desktop_shortcut_command: /home/{{ anaconda_owner }}/anaconda{{ anaconda_major_version }}/navigator.sh
+    desktop_shortcut_title: Anaconda Navigator
+    desktop_shortcut_comment: Anaconda Navigator
+    desktop_shortcut_owner: "{{ anaconda_owner }}"
+    desktop_shortcut_group: "{{ anaconda_group }}"
+    desktop_shortcut_terminal: false
+
+- name: set desktop shortcut for anaconda shell
+  include_role:
+    name: desktop_shortcut
+  vars:
+    desktop_shortcut_image_path: "{{ anaconda_shell_icon }}"
+    desktop_shortcut_filename: anaconda-shell
+    desktop_shortcut_command: /home/{{ anaconda_owner }}/anaconda{{ anaconda_major_version }}/shell.sh
+    desktop_shortcut_title: Anaconda Shell
+    desktop_shortcut_comment: Anaconda Shell
+    desktop_shortcut_owner: "{{ anaconda_owner }}"
+    desktop_shortcut_group: "{{ anaconda_group }}"
+    desktop_shortcut_terminal: true

@@ -1,0 +1,19 @@
+---
+# tasks file for mongodb
+- name: Install MongoDB Repo
+  yum_repository:
+    name: mongodb
+    description: MongoDB Repo
+    baseurl: https://repo.mongodb.org/yum/redhat/8/mongodb-org/{{ mongodb_version }}/x86_64/
+    gpgcheck: yes
+    enabled: yes
+    gpgkey: https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc
+- name: Install MongoDB
+  package:
+    name: mongodb-org
+    state: installed
+- name: Start and enable MongoDB
+  service:
+    name: mongod
+    state: "{{ mongodb_started }}"
+    enabled: "{{ mongodb_enabled }}"

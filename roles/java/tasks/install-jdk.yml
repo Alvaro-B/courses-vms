@@ -1,0 +1,16 @@
+- name: install JDK
+  yum:
+    name: /tmp/jdk-{{ java_major_version }}u{{ java_minor_version }}-{{ java_platform }}-{{ java_arch }}.{{ java_package }}
+    state: present
+  when:
+    - ansible_distribution_major_version == "7"
+- name: install JDK
+  dnf:
+    name: /tmp/jdk-{{ java_major_version }}u{{ java_minor_version }}-{{ java_platform }}-{{ java_arch }}.{{ java_package }}
+    state: present
+    disable_gpg_check: yes
+  when:
+    - ansible_distribution_major_version == "8"
+- file:
+    path: /tmp/jdk-{{ java_major_version }}u{{ java_minor_version }}-{{ java_platform }}-{{ java_arch }}.{{ java_package }}
+    state: absent

@@ -1,0 +1,6 @@
+- name: Unpack the libreoffice filesystem
+  unarchive:
+    src: /opt/LibreOffice_{{ libreoffice_version }}_Linux_x86-64_rpm.tar.gz
+    dest: /opt/
+    remote_src: yes
+    list_files: yes

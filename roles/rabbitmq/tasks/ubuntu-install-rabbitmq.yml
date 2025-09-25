@@ -1,0 +1,32 @@
+- name: APT Key for rabbitmq
+  apt_key:
+    url: https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
+    state: present
+- name: Add deb reposistory
+  template:
+    src: bintray.rabbitmq.list.j2
+    dest: /etc/apt/sources.list.d/bintray.rabbitmq.list
+- name: Install Erlang and RabbitMQ Server
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+  loop:
+    - apt-transport-https
+    - erlang-base
+    - erlang-asn1
+    - erlang-crypto
+    - erlang-eldap
+    - erlang-ftp
+    - erlang-inets
+    - erlang-mnesia
+    - erlang-os-mon
+    - erlang-parsetools
+    - erlang-public-key
+    - erlang-runtime-tools
+    - erlang-snmp
+    - erlang-ssl
+    - erlang-syntax-tools
+    - erlang-tftp
+    - erlang-tools
+    - erlang-xmerl  
+    - rabbitmq-server 

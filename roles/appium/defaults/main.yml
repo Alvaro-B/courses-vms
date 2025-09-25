@@ -1,0 +1,5 @@
+---
+# defaults file for appium
+appium_version: 1.15.1
+appium_owner: vagrant
+appium_group: "{{ appium_owner }}"

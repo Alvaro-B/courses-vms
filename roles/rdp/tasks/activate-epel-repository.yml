@@ -1,0 +1,5 @@
+- name: Activate Epel repository
+  yum:
+    name: epel-release
+    state: installed
+  when: ansible_distribution == "CentOS"

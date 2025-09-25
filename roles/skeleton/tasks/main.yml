@@ -1,0 +1,7 @@
+- name: Make skeleton 
+  block:
+    - import_tasks: include-firefox.yml
+    - import_tasks: include-chrome.yml
+    # - import_tasks: include-chromium.yml
+  when:
+    - ansible_windows_domain is undefined

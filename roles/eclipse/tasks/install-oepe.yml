@@ -1,0 +1,11 @@
+- name: Install eclipse OEPE
+  command: "/usr/local/eclipse/eclipse -nosplash \
+    -application org.eclipse.equinox.p2.director \
+    -repository \
+    https://download.oracle.com/otn_software/oepe/12.2.1.8/oxygen/repository/,\
+    http://download.oracle.com/otn_software/oepe/12.2.1.8/oxygen/repository/dependencies/ \
+    -installIU \
+    oracle.eclipse.tools.javaee.feature.group,\
+    oracle.eclipse.tools.maven.feature.group,\
+    oracle.eclipse.tools.weblogic.scripting.feature.group,\
+    oracle.eclipse.tools.weblogic.feature.group"

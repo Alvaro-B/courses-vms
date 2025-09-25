@@ -1,0 +1,7 @@
+- name: Create variable path
+  include_role:
+    name: profile
+  vars:
+    profile_software_name: java
+    profile_software_path: "{{ java_base_path }}"
+    profile_software_version: ansible

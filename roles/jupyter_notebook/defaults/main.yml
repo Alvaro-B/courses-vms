@@ -1,0 +1,6 @@
+---
+# defaults file for jupyter_notebook
+jupyter_notebook_owner: vagrant
+jupyter_notebook_pyspark: false
+jupyter_notebook_pyspark_auto: false
+jupyter_notebook_r: false

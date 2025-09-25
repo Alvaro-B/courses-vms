@@ -1,0 +1,19 @@
+- name: Create Windows user { username }
+  win_user:
+    name: "{{ username }}"
+    password: "{{ username }}"
+    state: present
+    groups:
+      - Administradores
+
+- name: Set default user logon as {{ username }}
+  win_regedit:
+    path: "{{ registry_path }}"
+    name: DefaultUsername
+    data: "{{ username }}"
+    
+- name: Set default pasword logon
+  win_regedit:
+    path: "{{ registry_path }}"
+    name: DefaultPassword
+    data: "{{ username }}"

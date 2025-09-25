@@ -1,0 +1,9 @@
+- name: Remove Gnome Keyring
+  dnf:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - gnome-keyring-pam
+    - NetworkManager-vpnc-gnome
+    - gnome-keyring
+  when: disable_keyring == true

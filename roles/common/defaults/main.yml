@@ -1,0 +1,12 @@
+---
+username: vagrant
+firewall_service: firewalld
+# Opciones: [ enforcing | permissive | disabled ]
+common_selinux_state: disabled
+extra_software: []
+disable_zram: false
+registry_path: 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\'
+change_mirror: false
+disable_keyring: true
+autologin: true
+autorun_services: false

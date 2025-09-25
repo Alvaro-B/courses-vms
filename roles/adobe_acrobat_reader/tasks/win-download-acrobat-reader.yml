@@ -1,0 +1,5 @@
+- name: Download Adobe Acrobat Reader for Windows 10
+  win_get_url:
+    url: https://ardownload2.adobe.com/pub/adobe/acrobat/win/AcrobatDC/2200320282/AcroRdrDCx642200320282_es_ES.exe
+    dest: C:\tmp\
+  when: ansible_distribution_major_version == "10"

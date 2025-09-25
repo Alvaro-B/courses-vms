@@ -1,0 +1,28 @@
+- name: Configure RPMfusion Yum Repository for fedora
+  block:
+  - name: Configure RPMfusion Free release
+    dnf:
+      name: https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ansible_distribution_major_version}}.noarch.rpm
+      state: "installed"
+      disable_gpg_check: true
+  # - name: "Install ffmpeg dependency"
+  #   dnf:
+  #     name: "libavdevice-4.4-2.fc34.x86_64"
+  #     state: "installed"
+  when:
+    - ansible_windows_domain is undefined
+    - ansible_distribution == "Fedora"
+- name: Configure RPMfusion Yum Repository for CentOS
+  block:
+  - name: Configure RPMfusion Free release
+    package:
+      name: https://download1.rpmfusion.org/free/el/rpmfusion-free-release-{{ansible_distribution_major_version}}.noarch.rpm
+      state: "installed"
+  #    disable_gpg_check: true
+  # - name: "Install ffmpeg dependency"
+  #   dnf:
+  #     name: "libavdevice-4.4-2.fc34.x86_64"
+  #     state: "installed"
+  when:
+    - ansible_windows_domain is undefined
+    - ansible_distribution == "CentOS"

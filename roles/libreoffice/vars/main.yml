@@ -1,0 +1,2 @@
+url_linux: https://downloadarchive.documentfoundation.org/libreoffice/old/{{ libreoffice_version }}/rpm/x86_64/LibreOffice_{{ libreoffice_version }}_Linux_x86-64_rpm.tar.gz
+url_windows: https://downloadarchive.documentfoundation.org/libreoffice/old/{{ libreoffice_version }}/win/x86_64/LibreOffice_{{ libreoffice_version }}_Win_x86-64.msi

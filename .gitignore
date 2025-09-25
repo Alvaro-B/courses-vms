@@ -1,0 +1,70 @@
+.vagrant/
+.vscode/
+inventory.ini
+workspace/
+
+# Compilados e binarios
+*.o
+*.so
+*.a
+*.dll
+*.exe
+*.class
+*.jar
+*.war
+*.ear
+
+# Arquivos comprimidos e imaxes pesadas
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.gz
+*.rar
+*.7z
+*.iso
+*.dmg
+
+# Multimedia pesado
+*.mp4
+*.mp3
+*.avi
+*.mkv
+*.mov
+*.wav
+*.flac
+*.jpg
+*.jpeg
+*.png
+*.tiff
+*.bmp
+*.svg
+
+# Datos e bases de datos
+*.csv
+*.tsv
+*.xls
+*.xlsx
+*.ods
+*.sqlite
+*.db
+*.sql
+*.bak
+
+# Máquinas virtuais e contedores
+*.vmdk
+*.vdi
+*.vagrant
+*.box
+*.qcow2
+*.img
+*.ova
+*.ovf
+
+# Outros ficheiros grandes típicos
+*.log
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db
+*.rpm

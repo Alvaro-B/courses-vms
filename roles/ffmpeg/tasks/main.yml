@@ -1,0 +1,4 @@
+- name: Install ffmpeg
+  block:
+    - import_tasks: configure-repo.yml
+    - import_tasks: install-ffmpeg.yml

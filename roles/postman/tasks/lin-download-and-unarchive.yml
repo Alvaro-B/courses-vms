@@ -1,0 +1,20 @@
+- name: Download Postman
+  get_url:
+    url: "{{ postman_url }}"
+    dest: /tmp/postman.tar.gz
+    owner: "{{ postman_owner }}"
+    group: "{{ postman_group }}"
+- stat: 
+    path: "{{ postman_system_path }}/Postman"
+  register: postman_path
+
+- name: unarchive source
+  unarchive:
+    src: /tmp/postman.tar.gz
+    dest: "{{ postman_system_path }}"
+    copy: no
+  when: postman_path.stat.exists == False
+  
+- file:
+    path: /tmp/postman.tar.gz
+    state: absent

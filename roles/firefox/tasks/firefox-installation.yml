@@ -1,0 +1,15 @@
+- name: Install Firefox for Linux
+  package:
+    name: firefox
+    state: latest
+  when:
+    - ansible_windows_domain is undefined
+
+- name: Install Firefox for Windows
+  win_chocolatey:
+    name: firefox
+    state: present
+    version: "{{firefox_version}}"
+    package_params: "/NoAutoUpdate"
+  when:
+    - ansible_windows_domain is defined

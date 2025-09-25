@@ -1,0 +1,33 @@
+---
+- name: detect java 11 version
+  shell:
+    cmd: alternatives --list | grep jre_{{ wso2_java_version }}_openjdk | awk '{ print $3}'
+  register: path_openjdk
+  changed_when: false
+- name: Download wso2
+  get_url:
+    url: https://github.com/wso2/product-apim/releases/download/v{{ wso2_version }}/wso2am-{{ wso2_version }}.zip
+    dest: /tmp/wso2.zip
+    owner: "{{ wso2_owner }}"
+    group: "{{ wso2_owner }}"
+    timeout: 60
+- name: unarchive wso2
+  unarchive:
+    src: /tmp/wso2.zip
+    dest: /usr/local/
+    copy: no
+- file:
+    path: /tmp/wso2.zip
+    state: absent
+- name: set java_home to local var
+  set_fact:
+    wso2_java_home: "{{ path_openjdk.stdout }}"
+- name: add shortcut
+  template:
+    src: templates/wso2.service.j2
+    dest: /etc/systemd/system/wso2.service
+- name: start service
+  service:
+    name: wso2
+    state: started
+    enabled: yes

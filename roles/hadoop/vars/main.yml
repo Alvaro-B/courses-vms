@@ -1,0 +1,3 @@
+---
+hadoop_base_path: /opt/hadoop-{{ hadoop_version }}
+hadoop_base_name: HADOOP 

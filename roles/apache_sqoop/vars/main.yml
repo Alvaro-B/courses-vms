@@ -1,0 +1,4 @@
+---
+# vars file for apache-sqoop
+apache_sqoop_base_name: SQOOP
+apache_sqoop_base_path: /opt/sqoop

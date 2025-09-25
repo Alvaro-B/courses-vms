@@ -1,0 +1,32 @@
+- name: Copy hue configuration
+  template:
+    src: hue.ini
+    dest: /etc/hue.ini
+- name: create metastore schema
+  include_role: 
+    name: mysql
+    tasks_from: create-database.yml
+  vars:
+    mysql_db_name: "{{ hue_db_name }}"
+    mysql_load_data: no
+    mysql_owner: "{{ hue_owner }}"
+    mysql_password:  "{{ hue_owner }}"
+# Inicialización de un contenedor. Se mantendrá iniciado siempre, incluso reiniciando la máquina
+- name: Ejecución de un contenedor
+  include_role:
+    name: docker_container
+  vars:
+    docker_container_name: cloudera-hue
+    docker_image: gethue/hue:{{ hue_version }}
+    docker_volumes:
+      - /etc/hue.ini:/usr/share/hue/desktop/conf/hue.ini
+    docker_network_mode: host
+# Configuramos hadoop para que tenga el directorio origen /user/hue
+- name: Initialize hdfs dir for hue
+  shell: |
+    source /etc/profile.d/ansible_hadoop.sh
+    hdfs dfs -mkdir -p /user/hue
+    hdfs dfs -chown hue:big-data /user/hue
+    exit 0
+  changed_when: false
+  become_user: "{{ hue_owner }}"

@@ -1,0 +1,10 @@
+---
+# tasks file for rabbitmq
+- import_tasks: centos-install-rabbitmq.yml
+  when: ansible_distribution == 'CentOS'
+- import_tasks: fedora-install-rabbitmq.yml
+  when: ansible_distribution == 'Fedora'
+- import_tasks: ubuntu-install-rabbitmq.yml
+  when: ansible_distribution == 'Ubuntu'
+- import_tasks: service-rabbitmq.yml
+- import_tasks: create-admin-user.yml

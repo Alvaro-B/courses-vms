@@ -1,0 +1,6 @@
+---
+# defaults file for anaconda
+anaconda_version: '2022.10'
+anaconda_major_version: '3'
+anaconda_owner: vagrant
+anaconda_group: vagrant

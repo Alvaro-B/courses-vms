@@ -1,0 +1,10 @@
+---
+# vars file for soapui
+soapui_url: https://dl.eviware.com/soapuios/{{ soapui_version }}/SoapUI-{{ soapui_version }}-linux-bin.tar.gz
+soapui_group: "{{ soapui_owner }}"
+soapui_system_path: /usr/local
+soapui_shortcut_path: /home/{{ soapui_owner }}/Desktop
+shortcut_command: "{{ soapui_system_path }}/SoapUI-{{ soapui_version }}/bin/soapui.sh"
+shortcut_title: SoapUI
+shortcut_comment: SoapUI Version {{ soapui_version }}
+shortcut_icon: "{{ soapui_system_path }}/SoapUI-{{ soapui_version }}/SoapUI-OS_256-256.png"

@@ -1,0 +1,14 @@
+- name: Install generic software
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - cloudera-manager-agent
+- name: Install master software
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - cloudera-manager-server
+    - cloudera-manager-server-db-2
+  when: cloudera_server_role == "master"

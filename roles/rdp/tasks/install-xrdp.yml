@@ -1,0 +1,20 @@
+- name: Install XRDP
+  block:
+    - name: Install XRDP
+      yum:
+        name: xrdp
+        state: installed
+
+    - name: Activate RDP service 
+      service:
+        name: xrdp
+        state: started
+        enabled: yes
+
+    - name: Opent port {{ rdp_port }}
+      firewalld:
+        port: "{{ rdp_port }}/tcp"
+        permanent: yes
+        state: enabled
+      ignore_errors: true
+  

@@ -1,0 +1,4 @@
+- name: add corrected spanish layout
+  copy:
+    src: km-0000040a.ini
+    dest: /etc/xrdp/

@@ -1,0 +1,11 @@
+- name: Postman installation for Linux
+  block:
+    - import_tasks: lin-download-and-unarchive.yml
+    - import_tasks: lin-postman-shortcut.yml
+  when: ansible_windows_domain is undefined
+
+- name: Postman installation for Windows
+  block:
+    - import_tasks: win-download.yml
+    - import_tasks: win-install.yml
+  when: ansible_windows_domain is defined

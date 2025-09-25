@@ -1,0 +1,9 @@
+- name: Ensure C:\tmp\ directory
+  win_file:
+    path: C:\tmp
+    state: directory
+    
+- name: Download eclipse
+  win_get_url:
+    url: "{{ windows_eclipse_final_url }}"
+    dest: C:\tmp\eclipse.zip

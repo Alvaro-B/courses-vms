@@ -1,0 +1,60 @@
+---
+# tasks file for soapui
+- name: Download SoapUI
+  get_url:
+    url: "{{ soapui_url }}"
+    dest: /tmp/soapui.tar.gz
+    owner: "{{ soapui_owner }}"
+    group: "{{ soapui_group }}"
+
+- stat: 
+    path: "{{ soapui_system_path }}/SoapUI-{{ soapui_version }}"
+  register: soapui_path
+
+- name: unarchive source
+  unarchive:
+    src: /tmp/soapui.tar.gz
+    dest: "{{ soapui_system_path }}"
+    copy: no
+  when: soapui_path.stat.exists == False
+
+- file:
+    path: /tmp/soapui.tar.gz
+    state: absent
+
+- name: Desktop directory exists
+  file:
+    path: "{{ soapui_shortcut_path }}"
+    state: directory
+    mode: 0755
+    owner: "{{ soapui_owner }}"
+    group: "{{ soapui_group }}"
+
+- name: Download SoapUI Icon Desktop Icon
+  get_url: 
+    url: https://raw.githubusercontent.com/SmartBear/soapui/next/soapui/src/main/resources/com/eviware/soapui/resources/images/SoapUI-OS_256-256.png
+    dest: "{{ soapui_system_path }}/SoapUI-{{ soapui_version }}"
+
+- name: add shortcut
+  template:
+    src: templates/shortcut.desktop.j2
+    dest: "{{ soapui_shortcut_path }}/soapui.desktop"
+    owner: "{{ soapui_owner }}"
+    group: "{{ soapui_group }}"
+    mode: 0740
+
+- name: get java openjdk path
+  shell: "alternatives --list | grep jre_{{ soapui_openjdk_version }}_openjdk | awk '{ print $3}'"
+  register: path_openjdk
+
+- name: set java binary to installed version
+  replace:
+    path: "{{ soapui_system_path }}/SoapUI-{{ soapui_version }}/bin/soapui.sh"
+    regexp: '^JFXRTPATH=`java'
+    replace: 'JFXRTPATH=`{{ path_openjdk.stdout }}/bin/java'
+
+- name: set java binary to installed version
+  replace:
+    path: "{{ soapui_system_path }}/SoapUI-{{ soapui_version }}/bin/soapui.sh"
+    regexp: '^java '
+    replace: '{{ path_openjdk.stdout }}/bin/java '

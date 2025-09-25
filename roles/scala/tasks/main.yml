@@ -1,0 +1,22 @@
+---
+- name: copy to file
+  get_url:
+    url: "{{ scala_mirror_url }}/scala/{{ scala_version }}/scala-{{ scala_version }}.tgz"
+    dest: /tmp/scala-{{ scala_version }}.tgz
+- stat: path="{{ scala_base_path }}"
+  register: scala_path
+- name: unarchive source
+  unarchive:
+    src: /tmp/scala-{{ scala_version }}.tgz
+    dest: /usr/local/
+    copy: no
+    owner: "{{ scala_owner }}"
+    group: "{{ scala_owner }}"
+  when: scala_path.stat.exists == False
+- file:
+    path: /tmp/scala-{{ scala_version }}.tgz
+    state: absent
+- name: add to path
+  template:
+    src: templates/path_template.sh.j2
+    dest: /etc/profile.d/scala-{{ scala_version }}.sh

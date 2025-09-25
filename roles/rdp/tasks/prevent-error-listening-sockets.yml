@@ -1,0 +1,15 @@
+- name: Prevent error listening sockets
+  block:
+    - name: Prevent error listening sockets /etc/xrdp/xrdp.ini
+      shell: sed -i "0,/allow_channels=true/{s/allow_channels=true/allow_channels=false/}" /etc/xrdp/xrdp.ini
+
+    - name: Correct desktop defaults
+      copy:
+        src: desktop
+        dest: /etc/sysconfig/
+    
+    - name: Prevent error listening sockets /etc/xrdp/sesman.ini
+      shell: sed -i "/param=96/ a param=-AcceptCutText=0\nparam=-SendCutText=0\nparam=-SendPrimary=0\nparam=-SetPrimary=0" /etc/xrdp/sesman.ini
+  when:
+    - ansible_distribution == "Fedora"
+    - ansible_windows_domain is undefined

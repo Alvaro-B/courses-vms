@@ -1,0 +1,13 @@
+[Unit]
+Description=wso2 Server {{ wso2_version }}
+
+[Service]
+Type=notice
+Environment=CARBON_HOME=/usr/local/wso2am-{{ wso2_version }}/bin/
+Environment=JAVA_HOME={{ wso2_java_home }}
+ExecStart=/usr/local/wso2am-{{ wso2_version }}/bin/api-manager.sh
+ExecReload=/usr/local/wso2am-{{ wso2_version }}/bin/api-manager.sh restart
+ExecStop=/usr/local/wso2am-{{ wso2_version }}/bin/api-manager.sh stop
+
+[Install]
+WantedBy=multi-user.target

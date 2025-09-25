@@ -1,0 +1,4 @@
+---
+# defaults file for soapui
+postman_version: latest
+postman_owner: vagrant

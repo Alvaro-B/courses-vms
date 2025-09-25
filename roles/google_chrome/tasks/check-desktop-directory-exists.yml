@@ -1,0 +1,8 @@
+---
+- name: Desktop Directory Exists
+  file:
+    path: "{{ chrome_shortcut_path }}"
+    state: directory
+    mode: 0755
+    owner: "{{ chrome_owner }}"
+    group: "{{ chrome_owner }}"

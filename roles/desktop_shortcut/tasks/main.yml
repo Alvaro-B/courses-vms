@@ -1,0 +1,15 @@
+---
+- name: Desktop directory exists
+  file:
+    path: /home/{{ desktop_shortcut_owner }}/Desktop
+    state: directory
+    mode: 0755
+    owner: "{{ desktop_shortcut_owner }}"
+    group: "{{ desktop_shortcut_group }}"
+- name: add shortcut
+  template:
+    src: shortcut.desktop.j2
+    dest: /home/{{ desktop_shortcut_owner }}/Desktop/{{ desktop_shortcut_filename }}.desktop
+    owner: "{{ desktop_shortcut_owner }}"
+    group: "{{ desktop_shortcut_group }}"
+    mode: 0755

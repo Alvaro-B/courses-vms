@@ -1,0 +1,92 @@
+---
+- name: Install docker container
+  include_role:
+    name: docker_container
+  vars:
+    docker_authorized_user: "{{ mysql_username }}"
+    docker_container_name: mysql
+    docker_image: "mysql:{{mysql_version}}"
+    docker_env:
+      MYSQL_ROOT_PASSWORD: mysql
+    docker_recreate_container: no
+    docker_network_mode: host
+
+- name: Install visual client
+  yum:
+    name: https://cdn.mysql.com/archives/mysql-workbench/mysql-workbench-community-8.0.22-1.el7.x86_64.rpm
+    state: installed
+    disable_gpg_check: yes
+  when:
+    - ansible_distribution == "CentOS"
+    - ansible_distribution_major_version == "7"
+
+- name: Install visual client
+  yum:
+    name: https://cdn.mysql.com/archives/mysql-workbench/mysql-workbench-community-{{ mysql_workbench_version }}.el{{ ansible_distribution_major_version }}.x86_64.rpm
+    state: installed
+    disable_gpg_check: yes
+  when:
+    - ansible_distribution == "CentOS"
+    - ansible_distribution_major_version == "8"
+
+- name: Install visual client Workbench (Fedora distros under 39) 
+  shell: dnf install -y https://downloads.mysql.com/archives/get/p/8/file/mysql-workbench-community-{{ mysql_workbench_version }}-1.fc{{ ansible_distribution_major_version }}.x86_64.rpm
+  when:
+    - ansible_distribution == "Fedora"
+    - mysql_client == "workbench"
+    - ansible_distribution_major_version | int <= 38
+
+- name: Install visual client Dbeaver for Fedora
+  dnf:
+    name: 'https://dbeaver.io/files/dbeaver-ce-latest-stable.x86_64.rpm'
+    state: present
+    disable_gpg_check: yes
+  when:
+    - ansible_distribution == "Fedora"
+    - mysql_client == "dbeaver" or ansible_distribution_major_version == "39"
+
+- name: Install shell client
+  yum:
+    name: https://repo.mysql.com/mysql80-community-release-el7-3.noarch.rpm
+    state: installed
+  when:
+    - ansible_distribution == "CentOS"
+    - ansible_distribution_major_version == "7"
+    - mysql_native_shell_client
+
+- name: Install shell client CentOS 7
+  yum:
+    name: mysql-community-client
+    state: installed
+  when:
+    - ansible_distribution == "CentOS"
+    - ansible_distribution_major_version == "7"
+    - mysql_native_shell_client
+
+- name: Install shell client CentOS 8
+  yum:
+    name: mysql
+    state: installed
+  when:
+    - ansible_distribution == "CentOS"
+    - ansible_distribution_major_version == "8"
+    - mysql_native_shell_client
+
+- name: Install shell client Fedora
+  dnf:
+    name: community-mysql
+    state: present
+    disable_gpg_check: yes
+  when:
+    - ansible_distribution == "Fedora"
+    - mysql_native_shell_client
+
+- name: Automatic login
+  template:
+    src: my.cnf.docker.j2
+    dest: /root/.my.cnf
+  vars:
+    my_cnf_user: root
+    my_cnf_pass: "{{ mysql_root_password }}"
+  when:
+    - mysql_native_shell_client

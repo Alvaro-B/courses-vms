@@ -1,0 +1,7 @@
+---
+# vars file for appium
+appium_url: https://github.com/appium/appium-desktop/releases/download/v{{ appium_version }}/Appium-linux-{{ appium_version }}.AppImage
+shortcut_command: /usr/local/appium/appium.AppImage --no-sandbox
+shortcut_title: Appium-{{ appium_version }}
+shortcut_comment: Appium {{ appium_version }}
+shortcut_icon: /usr/local/appium/Appium-Logo.jpg

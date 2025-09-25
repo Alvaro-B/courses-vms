@@ -1,0 +1,14 @@
+- name: Desktop directory exists
+  file:
+    path: "{{ android_studio_shortcut_path }}"
+    state: directory
+    mode: 0755
+    owner: "{{ android_studio_owner }}"
+    group: "{{ android_studio_group }}"
+- name: add shortcut
+  template:
+    src: templates/shortcut.desktop.j2
+    dest: "{{ android_studio_shortcut_path }}/android-studio.desktop"
+    owner: "{{ android_studio_owner }}"
+    group: "{{ android_studio_group }}"
+    mode: 0740

@@ -1,0 +1,8 @@
+- name: Install Docker Engine
+  dnf:
+    name: "{{item}}"
+    allowerasing: true 
+  loop:
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io

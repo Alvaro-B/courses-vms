@@ -1,0 +1,24 @@
+---
+# tasks file for snap
+- name: Install snap for fedora distributions
+  package:
+    name: snapd
+    state: installed
+- name: Create symbolic link 
+  file:
+    src: "/var/lib/snapd/snap"
+    dest: "/snap"
+    state: link  
+- name: Create variable path
+  include_role:
+    name: profile
+  vars:
+    profile_software_name: snap
+    profile_software_path: /snap/bin
+    profile_software_version: ansible
+- name: First execution to avoid too early operation
+  snap:
+    name: htop
+    state: present
+  ignore_errors: yes
+    

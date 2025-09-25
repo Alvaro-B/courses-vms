@@ -1,0 +1,11 @@
+---
+# defaults file for android_studio
+android_studio_owner: vagrant
+android_studio_group: "{{ android_studio_owner }}"
+# La versión es 4.0 Canary 9, viene escrito en la URL de descarga si se quiere cambiar por uno nuevo
+# La version y la de compilación están asociadas.
+android_studio_version: 4.0.0.9
+android_studio_compile_version: 193.6137316
+# por defecto es oracle.
+android_studio_java_option: openjdk
+android_studio_openjdk_version: 11

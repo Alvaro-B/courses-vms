@@ -1,0 +1,13 @@
+---
+- name: Show users
+  shell: rabbitmqctl list_users
+  register: rabbitmq_users
+- name: Create rabbitmq-server admin user
+  shell: rabbitmqctl add_user admin admin
+  when: "'admin\t[administrator]' not in rabbitmq_users.stdout_lines"
+- name: Add tags to administrator privileges
+  shell: rabbitmqctl set_user_tags admin administrator
+- name: Add permissions to / for admin user
+  shell: rabbitmqctl set_permissions -p / admin '.*' '.*' '.*'
+- name: Enable rabbitmq_management
+  shell: rabbitmq-plugins enable rabbitmq_management

@@ -1,0 +1,20 @@
+- name: Configure worker server
+  replace:
+    path: /etc/cloudera-scm-agent/config.ini
+    regexp: 'server_host=.*'
+    replace: "server_host={{ cloudera_ip_server_host }}"
+  when: cloudera_server_role == "worker"
+- name: Start previous master services
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  with_items:
+    - cloudera-scm-server-db
+    - cloudera-scm-server
+  when: cloudera_server_role == "master"
+- name: Start common services
+  service:
+    name: cloudera-scm-agent
+    state: started
+    enabled: yes

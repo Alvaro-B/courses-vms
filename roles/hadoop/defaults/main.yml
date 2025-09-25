@@ -1,0 +1,5 @@
+---
+hadoop_version: 3.1.2
+hadoop_owner: hadoop
+hadoop_java_option: oracle
+hadoop_openjdk_version:

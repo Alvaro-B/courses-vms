@@ -1,0 +1,24 @@
+# tasks file for profile
+- name: Desktop directory exists
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+    owner: "{{ pgadmin_owner }}"
+    group: "{{ pgadmin_owner }}"
+  loop:
+    - /home/{{ pgadmin_owner }}/Desktop
+    - /usr/share/pgadmin
+- name: download ico
+  get_url:
+    url: https://raw.githubusercontent.com/postgres/pgadmin3/master/pgadmin/include/images/pgAdmin3.ico
+    dest: /usr/share/pgadmin/pgadmin.ico
+    owner: "{{ pgadmin_owner }}"
+    group: "{{ pgadmin_owner }}"
+- name: add shortcut
+  template:
+    src: templates/shortcut.desktop.j2
+    dest: "/home/{{ pgadmin_owner }}/Desktop/pgadmin.desktop"
+    owner: "{{ pgadmin_owner }}"
+    group: "{{ pgadmin_owner }}"
+    mode: 0740

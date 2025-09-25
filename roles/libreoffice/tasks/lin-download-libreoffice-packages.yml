@@ -1,0 +1,6 @@
+- name: Download libreoffice packages
+  get_url:
+    url: "{{ url_linux }}"
+    dest: /opt
+    owner: "{{ base_username }}"
+    group: "{{ base_username }}"

@@ -1,0 +1,20 @@
+---
+# tasks file for obs_studio
+- name: Install repository
+  dnf:
+    name: 
+      - https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_distribution_major_version }}.noarch.rpm
+      - https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_distribution_major_version }}.noarch.rpm
+    state: installed
+    disable_gpg_check: yes
+- name: Install OBS Studio
+  dnf:
+    name: 
+      - obs-studio
+    state: installed
+- name: Copy OBS config
+  copy:
+    src: obs-studio
+    dest: /home/{{ obs_studio_username }}/.config/
+    owner: "{{ obs_studio_username }}"
+    group: "{{ obs_studio_username }}"

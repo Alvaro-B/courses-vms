@@ -1,0 +1,4 @@
+- name: Remove default background image
+  file:
+    path: /usr/share/backgrounds/images/default.png
+    state: absent

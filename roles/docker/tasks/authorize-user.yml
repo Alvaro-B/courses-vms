@@ -1,0 +1,10 @@
+- name: create group docker
+  group:
+    name: docker
+    state: present
+
+- name: authorize user
+  user:
+    name: "{{ docker_authorized_user }}"
+    groups: docker 
+    append: yes

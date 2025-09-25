@@ -1,0 +1,5 @@
+---
+# vars file for profile
+maven_filename: apache-maven-{{ maven_version }}
+maven_base_path: /usr/local/{{ maven_filename }}
+maven_mirror: "https://archive.apache.org/dist/maven"

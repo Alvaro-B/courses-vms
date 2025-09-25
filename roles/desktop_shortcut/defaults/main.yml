@@ -1,0 +1,15 @@
+---
+# Ruta de la imagen del icono
+desktop_shortcut_image_path:
+# Comando de ejecución
+desktop_shortcut_command:
+# Titulo a mostrar
+desktop_shortcut_title:
+# Comentario a mostrar
+desktop_shortcut_comment:
+# Nombre de fichero a generar
+desktop_shortcut_filename:
+# Usuario y grupo dueño del shortcut
+desktop_shortcut_owner: vagrant
+desktop_shortcut_group: vagrant
+desktop_shortcut_terminal: false

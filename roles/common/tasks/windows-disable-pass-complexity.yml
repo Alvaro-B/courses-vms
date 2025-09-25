@@ -1,0 +1,6 @@
+# Deshabilitar complejidad de contraseña
+- name: Disable Windows password complexity
+  win_security_policy:
+    section: System Access
+    key: PasswordComplexity
+    value: 0

@@ -1,0 +1,28 @@
+- name: Install flatpak
+  dnf:
+    name: flatpak
+    
+- name: Add the flathub remote to the system installation
+  flatpak_remote:
+    name: flathub
+    state: present
+    flatpakrepo_url: https://flathub.org/repo/flathub.flatpakrepo
+
+- name: Install chromium for Linux
+  flatpak: 
+    name: org.chromium.Chromium
+    state: present
+
+- name: Set desktop shortcut for chromium
+  include_role:
+    name: desktop_shortcut
+  vars:
+    desktop_shortcut_image_path: "/var/lib/flatpak/exports/share/icons/hicolor/128x128/apps/org.chromium.Chromium.png"
+    desktop_shortcut_filename: chromium
+    desktop_shortcut_command: /var/lib/flatpak/app/org.chromium.Chromium/current/active/export/bin/org.chromium.Chromium
+    desktop_shortcut_title: Chromium
+    desktop_shortcut_comment: Chromium Browser
+    desktop_shortcut_owner: "{{ base_username }}"
+    desktop_shortcut_group: "{{ base_username }}"
+    desktop_shortcut_terminal: false
+

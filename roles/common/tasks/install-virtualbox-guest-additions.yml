@@ -1,0 +1,40 @@
+- name: Descarga iso
+  get_url: 
+    url: http://download.virtualbox.org/virtualbox/{{ virtualbox_version }}/VBoxGuestAdditions_{{ virtualbox_version }}.iso
+    dest: /tmp/VBoxGuestAdditions.iso
+
+- name: montamos VBoxGuestAdditions
+  mount:
+    name: /mnt
+    src: /tmp/VBoxGuestAdditions.iso
+    fstype: iso9660
+    opts: noauto
+    state: mounted
+
+- name: Instalamos paquetes para compilación
+  package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ guest_additions_package_list }}"
+
+- name: Instalamos VBoxGuestAdditions
+  shell: /bin/bash /mnt/VBoxLinuxAdditions.run
+  register: command_result
+  failed_when: "'headers not found' in command_result.stdout"
+
+- name: Desinstalamos paquetes innecesarios
+  package:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - dkms
+    - kernel-devel-{{ ansible_kernel }}
+    
+- name: montamos VBoxGuestAdditions
+  mount:
+    name: /mnt
+    state: unmounted
+- name: eliminamos la iso
+  file:
+    name: /tmp/VBoxGuestAdditions.iso
+    state: absent

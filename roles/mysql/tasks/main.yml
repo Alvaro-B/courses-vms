@@ -1,0 +1,11 @@
+---
+# tasks file for mysql
+- import_tasks: install-software.yml
+  when:
+    - not mysql_dockerized
+
+- import_tasks: install-software-docker.yml
+  when:
+    - mysql_dockerized
+
+- import_tasks: create-user.yml

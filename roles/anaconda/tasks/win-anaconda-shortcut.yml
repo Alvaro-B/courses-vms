@@ -1,0 +1,9 @@
+- name: Anaconda navigator shortcut
+  win_shortcut:
+    src: 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Anaconda3 (64-bit)\Anaconda Navigator (Anaconda3).lnk'
+    dest: 'C:\Users\Public\Desktop\Anaconda Navigator.lnk'
+
+- name: Anaconda Powershell Prompt
+  win_shortcut:
+    src: 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Anaconda3 (64-bit)\Anaconda Powershell Prompt (Anaconda3).lnk'
+    dest: 'C:\Users\Public\Desktop\Anaconda Powershell Prompt.lnk'

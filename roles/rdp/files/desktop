@@ -1,0 +1,2 @@
+PREFERRED=xfce4-session
+unset DBUS_SESSION_BUS_ADDRESS; xfce4-session

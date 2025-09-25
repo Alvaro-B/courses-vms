@@ -1,0 +1,4 @@
+---
+- import_tasks: change_mirror.yml
+- import_tasks: upgrade_to_centos_stream.yml 
+

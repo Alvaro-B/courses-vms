@@ -1,0 +1,11 @@
+---
+# tasks file for chromium
+- import_tasks: chromium-linux.yml
+  when:
+    - ansible_system == "Linux"
+- import_tasks: chromium-windows.yml
+  when:
+    - ansible_system == "Win32NT" 
+- import_tasks: chromium-osx.yml
+  when:
+    - ansible_system == "Darwin"

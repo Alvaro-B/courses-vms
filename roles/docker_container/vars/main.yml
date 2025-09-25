@@ -1,0 +1,6 @@
+---
+# vars file for docker_container
+# variables for non compatible python versions.
+docker_ports_string: ""
+docker_env_string: ""
+docker_volume_string: ""

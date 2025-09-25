@@ -1,0 +1,12 @@
+- name: install Desktop {{ desktop_environments[desktop_environment].package}}
+  yum:
+    name: "{{ desktop_environments[desktop_environment].package}}"
+    state: present
+    
+- name: set default desktop {{ desktop_environments[desktop_environment].xsession}}
+  template:
+    src: account-service-user.j2
+    dest: /var/lib/AccountsService/users/{{ username }}
+    owner: root
+    group: root
+    mode: 0644

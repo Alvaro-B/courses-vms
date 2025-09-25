@@ -1,0 +1,6 @@
+- name: Unarchive eclipse
+  win_unzip:
+    src: C:\tmp\eclipse.zip
+    dest: C:\Program Files
+    creates: C:\Program Files\eclipse
+    delete_archive: yes

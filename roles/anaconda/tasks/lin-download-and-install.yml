@@ -1,0 +1,19 @@
+- name: Download and install Anaconda
+  block: 
+    - name: Download anaconda
+      get_url:
+        url: https://repo.anaconda.com/archive/Anaconda{{ anaconda_major_version }}-{{ anaconda_version }}-Linux-x86_64.sh
+        dest: /tmp/
+        owner: "{{ anaconda_owner }}"
+        group: "{{ anaconda_group }}"
+        mode: 0740
+    - name: Install with -b option
+      shell: /tmp/Anaconda{{ anaconda_major_version }}-{{ anaconda_version }}-Linux-x86_64.sh -b   
+  when: ansible_local.anaconda.role.installed is not defined
+  become_user: "{{ anaconda_owner }}"
+- name: Install with -u option
+  shell: /tmp/Anaconda{{ anaconda_major_version }}-{{ anaconda_version }}-Linux-x86_64.sh -u
+  become_user: "{{ anaconda_owner }}"
+  when: 
+    - ansible_local.anaconda.role.installed is defined
+    - ansible_local.anaconda.role.version | string != anaconda_version | string

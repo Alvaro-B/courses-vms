@@ -1,0 +1,31 @@
+- name: Generate Linux RDP users
+  block:
+    - name: Create group {{ item }}
+      group:
+        name: "{{ item }}"
+        state: present
+
+    - name: Generate password {{ item }} for {{ item }}
+      shell: "echo '{{ item }}' | openssl passwd -1 -stdin"
+      register: user_hashed_password
+
+    - name: Create user {{ item }}
+      user:
+        name: "{{item }}" 
+        state: present
+        password: "{{ user_hashed_password.stdout }}"
+        shell: /bin/bash
+        group: "{{ item }}"
+  when: ansible_windows_domain is undefined
+
+- name: Generate Windows RDP users
+  block:
+    - name: Creating user Windows {{ item }}
+      win_user:
+        name: '{{ item }}'
+        password: '{{ item }}'
+        state: present
+        groups: '{{ windows_rdp_group }}'
+  when:
+    - ansible_os_product_type is defined and ansible_os_product_type == 'server'
+    - ansible_windows_domain is defined

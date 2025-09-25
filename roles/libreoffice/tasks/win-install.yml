@@ -1,0 +1,4 @@
+- name: Install Libreoffice for Windows
+  win_package:
+    path: "{{url_windows}}"
+    state: present

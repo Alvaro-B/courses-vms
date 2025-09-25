@@ -1,0 +1,18 @@
+- stat: path="/usr/local/android-studio"
+  register: android_studio_path
+- name: unarchive source
+  block:
+    - name: Download Android Studio
+      get_url:
+        url: "{{ android_studio_url }}"
+        dest: /tmp/android-studio.tar.gz
+        owner: "{{ android_studio_owner }}"
+        group: "{{ android_studio_group }}"
+    - unarchive:
+        src: /tmp/android-studio.tar.gz
+        dest: /usr/local/
+        copy: no
+    - file:
+        path: /tmp/android-studio.tar.gz
+        state: absent    
+  when: android_studio_path.stat.exists == False

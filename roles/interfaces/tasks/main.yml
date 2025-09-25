@@ -1,0 +1,93 @@
+---
+##################################
+#   _     ___ _   _ _   ___  __  #
+#  | |   |_ _| \ | | | | \ \/ /  #
+#  | |    | ||  \| | | | |\  /   #
+#  | |___ | || |\  | |_| |/  \   #
+#  |_____|___|_| \_|\___//_/\_\  #
+################################## 
+#
+# Fedora 34
+#
+- name: Configure network interfaces
+  block:
+    # Buscar la segunda interfaz disponible
+    - name: show interfaces
+      set_fact: 
+        iface: "{{ (ansible_interfaces | difference(interfaces_base_distro[ansible_distribution + ansible_distribution_major_version]))[0] }}"
+    # configurar interfaz para que sea de ip la indicada
+    - name: Configure interface
+      nmcli:
+        conn_name: ansible
+        ifname: "{{ iface }}"
+        type: ethernet
+        ip4: "{{ ip_address }}/24"
+        gw4: "{{ gateway }}"
+        state: present
+        autoconnect: yes
+  rescue:
+    - name: Error configuring network
+      debug:
+        msg: 'No se puede configurar la red'
+  when:
+    - ansible_windows_domain is undefined
+    - ansible_distribution_major_version == 34
+#
+# Configuración interfaces Fedora 37 o superior
+#
+- name: Configure network interfaces
+  block:
+    - name: show interfaces
+      set_fact: 
+        iface: "{{ (ansible_interfaces | difference(interfaces_base_distro[ansible_distribution + ansible_distribution_major_version]))[0] }}"
+    
+    - name: Configure static interface
+      shell: nmcli con mod {{ iface }} ipv4.method manual ipv4.addresses {{ ip_address }}/24 ipv4.gateway {{ gateway }}
+  
+    - name: Set low priority to interface {{ iface }}
+      lineinfile:
+        path: /etc/NetworkManager/system-connections/eth0.nmconnection
+        insertafter: '^method=manual$'
+        line: 'route-metric=200'  
+  rescue:
+    - name: Error configuring network
+      debug:
+        msg: 'No se puede configurar la red'
+  when:
+    - ansible_windows_domain is undefined
+    - ansible_distribution_major_version | int >= 37
+
+- name: "Change /etc/hosts file"
+  template:
+    src: templates/etc_hosts.j2
+    dest: /etc/hosts
+  when:
+    - ansible_windows_domain is undefined
+
+#######################################################
+#  __        _____ _   _ ____   _____        ______   #
+#  \ \      / /_ _| \ | |  _ \ / _ \ \      / / ___|  #
+#   \ \ /\ / / | ||  \| | | | | | | \ \ /\ / /\___ \  #
+#    \ V  V /  | || |\  | |_| | |_| |\ V  V /  ___) | #
+#     \_/\_/  |___|_| \_|____/ \___/  \_/\_/  |____/  #
+#######################################################
+
+# Configuración de la segunda interfaz en Windows
+- name: Configuring second network interface
+  block:
+    - name: Configuring second interface as static IP 
+      win_shell: New-NetIPAddress -InterfaceAlias "Ethernet 2" -IPAddress {{ ip_address }} -PrefixLength 24 -DefaultGateway {{ gateway }}
+  rescue:
+    - debug:
+        msg: "Tal vez la red ya ha sigo configurada o no existe una segunda interfaz disponible"
+  when:
+    - ansible_windows_domain is defined
+
+- name: "Change /etc/hosts file"
+  template:
+    src: templates/etc_hosts.j2
+    dest: C:\Windows\System32\drivers\etc\hosts
+  when:
+    - ansible_windows_domain is defined
+
+  

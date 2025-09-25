@@ -1,0 +1,3 @@
+---
+# defaults file for adobe-acrobat-reader
+adobe_acrobat_reader_install_native: true

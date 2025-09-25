@@ -1,0 +1,14 @@
+- name: Install Spanish language package
+  dnf: 
+    name: langpacks-es
+    state: present
+
+# - name: Set language
+#   shell: localectl set-locale LANG=es_ES.utf8
+
+- name: Set keyboard layout 
+  shell: localectl set-keymap es
+
+# - reboot:
+
+

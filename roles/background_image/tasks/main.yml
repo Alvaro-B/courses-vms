@@ -1,0 +1,6 @@
+- name: Change background image in Fedora
+  block:
+    - import_tasks: lin-remove-default-image.yml
+    - import_tasks: lin-copy-image.yml
+  when:
+    - ansible_windows_domain is undefined
