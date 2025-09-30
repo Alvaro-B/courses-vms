@@ -1,4 +1,6 @@
-# CURSO GIT
+# SOFTWARE CURSOS
+
+## CURSO GIT
 
 - Visual Studio
 - Terminator
@@ -6,3 +8,8 @@
 - Firefox
 
 ---
+
+## CURSO SERVICIOS WEB REST
+
+- Spring Tool Suite
+- Java 21

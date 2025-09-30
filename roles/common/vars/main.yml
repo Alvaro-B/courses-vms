@@ -69,10 +69,8 @@ distros:
     ntp_package: chrony
     software:
       - gedit
-      - file-roller
-      - xrandr
-      - wmctrl
       - python3-pip
+      - ImageMagick
 
   Fedora39:
     firewall_service: firewalld
@@ -80,10 +78,8 @@ distros:
     ntp_package: chrony
     software:
       - gedit
-      - file-roller
-      - xrandr
-      - wmctrl
       - python3-pip
+      - ImageMagick
 
   Fedora41:
     firewall_service: firewalld
@@ -91,10 +87,8 @@ distros:
     ntp_package: chrony
     software:
       - gedit
-      - file-roller
-      - xrandr
-      - wmctrl
       - python3-pip
+      - ImageMagick
       
 base_software:
   - "{{ distros[ansible_distribution + ansible_distribution_major_version].ntp_package }}"

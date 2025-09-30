@@ -1,8 +1,13 @@
 ---
-# defaults file for spring_tool_suite
-spring_tool_suite_major_version: 4
 spring_tool_suite_owner: vagrant
-spring_tool_suite_version: 4.8.0.RELEASE
-spring_tool_suite_distribution: e4.17
-spring_tool_suite_java_option: oracle
-spring_tool_suite_openjdk_version:
+
+# Defaults STS Version
+spring_tool_suite_major_version: 4
+spring_tool_suite_version: '4.32.0.RELEASE'
+spring_tool_suite_distribution: 'e4.37'
+# ========================================
+
+# Defaults Java
+spring_tool_suite_java_option: openjdk
+spring_tool_suite_openjdk_version: 21
+# ====================================
