@@ -1,33 +1,45 @@
 ---
 # tasks file for spring_tool_suite
-- name: Download STS
+
+- name: Download Spring Tool Suite
   get_url:
     url: "{{ spring_tool_suite_url }}"
     dest: /tmp/sts.tar.gz
     owner: "{{ spring_tool_suite_owner }}"
     group: "{{ spring_tool_suite_owner }}"
     timeout: 30
+
 - stat: path="/usr/local/sts"
   register: sts_path
-- name: unarchive sts
+
+- name: "Unarchive sts.tar.gz in {{ sts_system_path }}"
   unarchive:
     src: /tmp/sts.tar.gz
-    dest: "{{ sts_system_path }}"
+    dest: "{{ sts_system_path }}"
     copy: no
   when: sts_path.stat.exists == False
+
 - file:
     path: /tmp/sts.tar.gz
     state: absent
+
 - name: Move directory to a predecible path
   shell: "mv /usr/local/sts-* /usr/local/sts" 
   when: sts_path.stat.exists == False
+
 - name: Desktop directory exists
   file:
-    path: "{{ sts_shortcut_path }}"
+    path: "{{ sts_shortcut_path }}"
     state: directory
     mode: 0755
     owner: "{{ spring_tool_suite_owner }}"
-    group: "{{ spring_tool_suite_owner }}"
+    group: "{{ spring_tool_suite_owner }}"
+
+- name: Prepare icon for shortcut
+  shell: "magick {{ sts_system_path }}/sts/icon.xpm {{ sts_system_path }}/sts/icon.png"
+  args:
+    creates: "{{ sts_system_path }}/sts/icon.png"
+
 - name: add shortcut
   template:
     src: templates/shortcut.desktop.j2

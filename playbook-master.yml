@@ -3,19 +3,32 @@
   hosts: all
   become: true
   vars:
+
+    restart: no
+
     # USUARIO
     base_username: alumno
-    shell: "zsh"
+    shell: "bash"
 
     # Extra software
-    extras:
-      - terminator
+    extras: [] 
 
     # Definir SW máquina
-    common_conf: no 
-    oh_my_zsh: yes
+    common_conf: yes 
+    oh_my_zsh: no
     browsers: yes
-    vsc: yes
+    vsc: no
+    rdp: yes 
+    copy_workspace: no
+    # == STS ==
+    # Consultar versións: 
+    # https://github.com/spring-projects/spring-tools/wiki/Previous-Versions
+    spring: no
+    sts_major_version: 4
+    sts_version: '4.32.0.RELEASE'
+    sts_distribution: 'e4.37'
+    sts_openjdk_version: "{{ java_main_version }}"
+    # =========
 
     nodejs: no 
     docker: no
@@ -24,11 +37,10 @@
     jupyter: no
     maven: no
     postman: no
-    copy_workspace: no
-    rdp: no 
 
-    # Versións
+    # Versións xenerais
     java_main_version: 21
+
     docker_compose_version: v2.39.4
     eclipse_rel: '2025-03'
     eclipse_v: 'R'
@@ -39,28 +51,21 @@
     tomcat_major_version: 9
 
   tasks:   
-    # Este rol es obligatorio para para firewall, selinux e instalar software básico para los cursos
+
+    # TODO: revisar sw base para Fedora (eliminar innecesario cursos)
     - name: Configuración común
       include_role:
         name: common
       vars:
-        # Poner a true si se desea definir una nueva url del repositorio fedora.repo y fedora-updates.repo
-        change_mirror: no
-        # Definir cabecera de la url del repositorio que queremos usar
+        # Definir url do repositorio fedora.repo e fedora-updates.repo
         # {{ mirror }}/updates/$releasever/Everything/$basearch/
-        # {{ mirror }}/releases/$releasever/Everything/$basearch/os/
+        change_mirror: no
         mirror: https://fr2.rpmfind.net/linux/fedora/linux 
         username: "{{ base_username }}"
         user_shell: "{{ shell }}"
-        # Opciones: [ enforcing | permissive | disabled ]
-        # Si no definimos la variable, se considera disabled.
         common_selinux_state: disabled
-        # Esta opción solo es necesaria para deshabilitar de forma permanente 
-        # el área de intercambio en la distribución Fedora
         disable_zram: false
-        # Variable opcional para cursos que necesiten paquetes de instalación especiales
         extra_software: "{{ extras }}"
-        # Variable para no desinstalar gnome-keyring, por defecto a true
         disable_keyring: yes
       when: common_conf 
     
@@ -71,25 +76,66 @@
         username: "{{ base_username }}"
       when: oh_my_zsh
 
-    - block:
-        - name: Instala Firefox
-          include_role:
-            name: firefox
-          vars:
-            browser_configuration_files: no 
-        
-        - name: Instala Google Chrome
-          include_role:
-            name: google_chrome
-          vars:
-            chrome_owner: "{{ base_username }}"
-            browser_configuration_files: no
+    # TODO: Acceso directo Firefox
+    - name: Instala Navegadores 
+      block:
+          - name: Instala Firefox
+            include_role:
+              name: firefox
+            vars:
+              browser_configuration_files: no 
+          
+          - name: Instala Google Chrome
+            include_role:
+              name: google_chrome
+            vars:
+              chrome_owner: "{{ base_username }}"
+              browser_configuration_files: no
       when: browsers
     
+    # TODO: Acceso directo VSC
     - name: Instala Visual Studio Code
       include_role:
         name: visual_studio_code
       when: vsc
+
+    # Instalación de RDP 
+    # Conectarse á máquina a través do porto 3389
+    # Precisa reiniciar ou iniciar sesión unha vez para que funcione.
+    - name: Instalar RDP
+      include_role:
+        name: rdp
+      vars:
+        rdp_owner: "{{ base_username }}"
+        rdp_users: []
+      when: rdp
+
+    - name: Copiar workspace
+      copy:
+        src: /vagrant/workspace
+        dest: /home/{{ base_username }}
+        owner: "{{ base_username }}"
+        group: "{{ base_username }}"
+        mode: '0755'
+        remote_src: yes
+      when: copy_workspace
+
+    - name: Instalación de Spring Tool Suite
+      include_role:
+        name: spring_tool_suite
+      vars:
+        spring_tool_suite_major_version: "{{ sts_major_version }}"
+        spring_tool_suite_version: "{{ sts_version }}"
+        spring_tool_suite_distribution: "{{ sts_distribution }}"
+        spring_tool_suite_owner: "{{ base_username }}"
+        spring_tool_suite_java_option: openjdk
+        spring_tool_suite_openjdk_version: "{{ sts_openjdk_version }}"
+      when: spring
+
+    - name: Reiniciar
+      reboot:
+      when: restart
+    
 # ============================================================================
     - name: Instalación de Node JS
       include_role:
@@ -160,33 +206,7 @@
       when: postman
 
 
-    # Instalación de RDP 
-    # Permite abrir el puerto 3389 de la maquina virtual para conexión remota por RDP
-    # Para que funcione hay que abrir el puerto en Virtualbox:
-    #  - Se puede ir a network->nat->advanced->forwarded-ports y agregarlo a mano
-    #    name: rdp host_port: 3389 guest_port: 3389 - No hace falta rellenar más secciones. Ya funciona con eso.
-    #  - Se puede agregar en el Vagrantfile la directiva: 
-    #    config.vm.network "forwarded_port", guest: 3389, host: 3389
-    # Es necesario reiniciar la instancia o iniciar sesión una vez para conectarse en remoto.
-    - name: Instalar RDP
-      include_role:
-        name: rdp
-      vars:
-        rdp_owner: "{{ base_username }}"
-        # Los usuarios RDP indican las cuentas que se crearán con acceso a RDP. Esta variable es opcional. 
-        # El rdp_owner se agrega a la lista por defecto internamente por retrocompatibilidad.
-        rdp_users: []
-      when: rdp
-
-    - name: Copiar workspace
-      copy:
-        src: /vagrant/workspace
-        dest: /home/{{ base_username }}
-        owner: "{{ base_username }}"
-        group: "{{ base_username }}"
-        mode: '0755'
-        remote_src: yes
-      when: copy_workspace
+    
 
     # - name: Ensure download directory
     #   file:

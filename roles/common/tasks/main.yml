@@ -16,6 +16,9 @@
       register: default_runlevel
       changed_when: false
 
+    # Disable selinux and firewall. 
+    # Install common sw
+    # Enable pcsd and ntpd
     - import_tasks: linux-tasks/common.yml
 
     - import_tasks: linux-tasks/disable-lock-screen.yml
