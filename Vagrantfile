@@ -14,7 +14,7 @@ MAIN_BOX="pronoide/fedoragui"
 MAIN_VERSION="41"
 MAIN_SERVER_SUFFIX="-control"
 MEMORY_MAIN="8192"
-MAIN_CPU = 0
+MAIN_CPU = 2
 MAIN_PLAYBOOK = "playbook-master.yml"
 # 
 # MINIONS
