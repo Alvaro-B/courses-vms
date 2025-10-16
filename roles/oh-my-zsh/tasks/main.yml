@@ -1,16 +1,22 @@
-- name: Ensure ZSH
-  package:
-    name: zsh
-    state: present
-
 - name: Ensure curl
   package:
     name: curl
     state: present
 
+- name: Ensure ZSH
+  package:
+    name: zsh
+    state: present
+
+- name: Remove .zshrc
+  file:
+    path: "/home/{{ base_username }}/.zshrc"
+    state: absent
+
+# TODO: Se queda el comando bloqueado 
 - name: Install Oh My Zsh
   shell: >
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" ; exit 
   args:
     chdir: "/home/{{ base_username }}"
     creates: "/home/{{ base_username }}/.oh-my-zsh"

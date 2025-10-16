@@ -3,23 +3,26 @@
 # =======================================================================
 # 
 # Xerais
-PROJECT_NAME="servicios-web"
+PROJECT_NAME="ansible"
 NETWORK = "192.168.15"
 HASH_IPS = {}
-NUM_WORKERS = 0
-CREATE_NAT = false
+NUM_WORKERS = 2
+CREATE_NAT = true
 # 
 # MÁQUINA MASTER
 MAIN_BOX="pronoide/fedoragui"
 MAIN_VERSION="41"
-MAIN_SERVER_SUFFIX=""
-MEMORY_MAIN="8192"
+MAIN_SERVER_SUFFIX="-control"
+MEMORY_MAIN="6144"
 MAIN_CPU = 2
 MAIN_PLAYBOOK = "playbook-master.yml"
 # 
 # MINIONS
-MEMORY_MINION="6144"
+WORKER_BOX="pronoide/fedora"
+WORKER_VERSION="41"
 WORKER_SERVER_SUFFIX="-minion"
+MEMORY_MINION="4096"
+MINION_PLAYBOOK = "playbook-minion.yml"
 # 
 # ANSIBLE MINIONS
 # ---
@@ -77,7 +80,7 @@ findIps()
 Vagrant.configure("2") do |config|
 
   # ============== MÁQUINA MASTER ===============
-  config.vm.define "#{PROJECT_NAME}" do |master|
+  config.vm.define "#{PROJECT_NAME}#{MAIN_SERVER_SUFFIX}" do |master|
    
     # Imaxe e versión
     master.vm.box = "#{MAIN_BOX}"
@@ -108,9 +111,6 @@ Vagrant.configure("2") do |config|
     end
 
     # Aprovisionar
-    puts "*********************************************************************"
-    puts "Aprovisionando con #{ MAIN_PLAYBOOK }"
-    puts "*********************************************************************"
     master.vm.provision "ansible" do |ansible|
       ansible.compatibility_mode = "2.0"
       ansible.playbook = "#{ MAIN_PLAYBOOK }"
@@ -123,27 +123,31 @@ Vagrant.configure("2") do |config|
   end
 
   # ============== MINIONS ===============
-  # iterable = (1..(NUM_WORKERS))
-  # iterable.each do |i|
-  #   config.vm.define "#{PROJECT_NAME}#{WORKER_SERVER_SUFFIX}#{i}#{FQDN_BASE}" do |node|
-  #       node.vm.box = "pronoide/fedora"
-  #       node.vm.box_version = "37"
-  #       puts "Maquina: #{PROJECT_NAME}#{WORKER_SERVER_SUFFIX}#{i}#{FQDN_BASE}, ip:#{NETWORK}.10#{i}"
-  #       nat(node)
-  #       node.vm.hostname = "#{PROJECT_NAME}#{WORKER_SERVER_SUFFIX}#{i}#{FQDN_BASE}"
-  #       node.vm.provider "virtualbox" do |vb|
-  #         vb.memory = "3072"
-  #         vb.name = "#{PROJECT_NAME}#{WORKER_SERVER_SUFFIX}#{i}#{FQDN_BASE}"
-  #       end
-  #       node.vm.provision "ansible" do |ansible|
-  #         ansible.compatibility_mode = "2.0"
-  #         ansible.playbook = "playbook-slave.yml"
-  #         ansible.extra_vars = {
-  #         ip_address: "#{NETWORK}.10#{i}",
-  #         gateway: "#{NETWORK}.1",
-  #         entradas_hosts: HASH_IPS
-  #     }
-  #       end
-  #   end
-  # end
+  iterable = (1..(NUM_WORKERS))
+  iterable.each do |i|
+    puts "*********************************************************************"
+    puts "Máquina ===> #{PROJECT_NAME}#{WORKER_SERVER_SUFFIX}#{i}, ip:#{NETWORK}.10#{i}"
+    puts "*********************************************************************"
+    config.vm.define "#{PROJECT_NAME}#{WORKER_SERVER_SUFFIX}#{i}" do |node|
+        node.vm.box = "#{WORKER_BOX}"
+        node.vm.box_version = "#{WORKER_VERSION}"
+        nat(node)
+        node.vm.hostname = "#{PROJECT_NAME}#{WORKER_SERVER_SUFFIX}#{i}"
+        node.vm.provider "virtualbox" do |vb|
+          vb.memory = "#{MEMORY_MINION}"
+          vb.name = "#{PROJECT_NAME}#{WORKER_SERVER_SUFFIX}#{i}"
+        end
+
+        # Aprovisionar
+        node.vm.provision "ansible" do |ansible|
+          ansible.compatibility_mode = "2.0"
+          ansible.playbook = "#{ MINION_PLAYBOOK }"
+          ansible.extra_vars = {
+              ip_address: "#{NETWORK}.10#{i}",
+              gateway: "#{NETWORK}.1",
+              entradas_hosts: HASH_IPS
+          }
+        end
+    end
+  end
 end
