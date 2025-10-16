@@ -1,0 +1,76 @@
+---
+- name: Playbook curso minions
+  hosts: all
+  become: true
+  vars:
+
+    restart: no
+
+    # USUARIO
+    base_username: minion
+    shell: "bash"
+
+    # Extra software
+    extras: [] 
+
+    # Definir SW máquina
+    common_conf: yes 
+    oh_my_zsh: no
+    browsers: no
+    copy_workspace: no
+    interfaces_red: yes
+
+    docker: no
+    maven: no
+
+    # Versións xenerais
+    java_main_version: 21
+
+  tasks:   
+
+    # TODO: revisar sw base para Fedora (eliminar innecesario cursos)
+    - name: Configuración común
+      include_role:
+        name: common
+      vars:
+        # Definir url do repositorio fedora.repo e fedora-updates.repo
+        # {{ mirror }}/updates/$releasever/Everything/$basearch/
+        change_mirror: no
+        mirror: https://fr2.rpmfind.net/linux/fedora/linux 
+        username: "{{ base_username }}"
+        user_shell: "{{ shell }}"
+        common_selinux_state: disabled
+        disable_zram: false
+        extra_software: "{{ extras }}"
+        disable_keyring: yes
+      when: common_conf 
+    
+    - name: Instala Oh-My-Zsh
+      include_role: 
+        name: oh-my-zsh
+      vars:
+        username: "{{ base_username }}"
+      when: oh_my_zsh
+
+    - name: Copiar workspace
+      copy:
+        src: /vagrant/workspace
+        dest: /home/{{ base_username }}
+        owner: "{{ base_username }}"
+        group: "{{ base_username }}"
+        mode: '0755'
+        remote_src: yes
+      when: copy_workspace
+
+    - name: Rol Interfaces
+      include_role:
+        name: interfaces
+      when: interfaces_red
+
+    - name: Reiniciar
+      reboot:
+      when: restart
+    
+
+   
+    

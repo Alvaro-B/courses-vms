@@ -11,13 +11,14 @@
     shell: "bash"
 
     # Extra software
-    extras: [] 
+    extras: 
+      - terminator
 
     # Definir SW máquina
     common_conf: yes 
     oh_my_zsh: no
     browsers: yes
-    vsc: no
+    vsc: yes
     rdp: yes 
     copy_workspace: no
     # == STS ==
@@ -29,6 +30,7 @@
     sts_distribution: 'e4.37'
     sts_openjdk_version: "{{ java_main_version }}"
     # =========
+    interfaces_red: yes
 
     nodejs: no 
     docker: no
@@ -131,6 +133,11 @@
         spring_tool_suite_java_option: openjdk
         spring_tool_suite_openjdk_version: "{{ sts_openjdk_version }}"
       when: spring
+
+    - name: Rol Interfaces
+      include_role:
+        name: interfaces
+      when: interfaces_red
 
     - name: Reiniciar
       reboot:
