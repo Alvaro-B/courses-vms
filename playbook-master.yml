@@ -11,16 +11,15 @@
     shell: "bash"
 
     # Extra software
-    extras: 
-      - terminator
+    extras: []
 
     # Definir SW máquina
     common_conf: yes 
     oh_my_zsh: no
     browsers: yes
-    vsc: yes
+    java: yes
+    vsc: no
     rdp: yes 
-    copy_workspace: no
     # == STS ==
     # Consultar versións: 
     # https://github.com/spring-projects/spring-tools/wiki/Previous-Versions
@@ -30,7 +29,24 @@
     sts_distribution: 'e4.37'
     sts_openjdk_version: "{{ java_main_version }}"
     # =========
-    interfaces_red: yes
+    interfaces_red: no
+    copy_workspace: no
+    # == Downloads ==
+    download_resources: yes
+    downloads_urls:
+      - https://download.jetbrains.com/idea/ideaIC-2025.2.3.tar.gz
+      - https://dlcdn.apache.org/tomcat/tomcat-11/v11.0.13/bin/apache-tomcat-11.0.13.tar.gz
+      - https://adoptium.net/es/download?link=https%3A%2F%2Fgithub.com%2Fadoptium%2Ftemurin21-binaries%2Freleases%2Fdownload%2Fjdk-21.0.8%252B9%2FOpenJDK21U-jdk_x64_linux_hotspot_21.0.8_9.tar.gz&vendor=Adoptium
+      - https://adoptium.net/es/download?link=https%3A%2F%2Fgithub.com%2Fadoptium%2Ftemurin17-binaries%2Freleases%2Fdownload%2Fjdk-17.0.16%252B8%2FOpenJDK17U-jdk_x64_linux_hotspot_17.0.16_8.tar.gz&vendor=Adoptium
+      - https://github.com/ibmruntimes/semeru25-binaries/releases/download/jdk-25%2B36_openj9-0.55.0/ibm-semeru-open-jdk_x64_linux_25_36_openj9-0.55.0.tar.gz
+      - https://github.com/ibmruntimes/semeru21-binaries/releases/download/jdk-21.0.8%2B9_openj9-0.53.0/ibm-semeru-open-jdk_x64_linux_21.0.8_9_openj9-0.53.0.tar.gz
+      - https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.16%2B8_openj9-0.53.0/ibm-semeru-open-jdk_x64_linux_17.0.16_8_openj9-0.53.0.tar.gz
+      - https://download.oracle.com/graalvm/25/latest/graalvm-jdk-25_linux-x64_bin.tar.gz
+      - https://download.oracle.com/graalvm/21/latest/graalvm-jdk-21_linux-x64_bin.tar.gz
+      - https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-25.0.0/graalvm-community-jdk-25.0.0_linux-x64_bin.tar.gz
+      - https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-21.0.2/graalvm-community-jdk-21.0.2_linux-x64_bin.tar.gz
+      - https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-17.0.7/graalvm-community-jdk-17.0.7_linux-x64_bin.tar.gz
+    # =========
 
     nodejs: no 
     docker: no
@@ -41,7 +57,7 @@
     postman: no
 
     # Versións xenerais
-    java_main_version: 21
+    java_main_version: 17
 
     docker_compose_version: v2.39.4
     eclipse_rel: '2025-03'
@@ -94,6 +110,19 @@
               chrome_owner: "{{ base_username }}"
               browser_configuration_files: no
       when: browsers
+
+    - name: Instala Java
+      include_role:
+        name: java
+      vars:
+        # Solo se soporta openjdk
+        java_option: openjdk
+        java_openjdk_version: "{{ java_main_version }}"        
+        # Crea el fichero java_ansible.sh apuntando a la versión de java instalada.
+        java_set_java_home: true
+        # Versión de java que se va a usar por defecto en la consola shell
+        java_set_default: true
+      when: java
     
     # TODO: Acceso directo VSC
     - name: Instala Visual Studio Code
@@ -112,16 +141,6 @@
         rdp_users: []
       when: rdp
 
-    - name: Copiar workspace
-      copy:
-        src: /vagrant/workspace
-        dest: /home/{{ base_username }}
-        owner: "{{ base_username }}"
-        group: "{{ base_username }}"
-        mode: '0755'
-        remote_src: yes
-      when: copy_workspace
-
     - name: Instalación de Spring Tool Suite
       include_role:
         name: spring_tool_suite
@@ -138,6 +157,36 @@
       include_role:
         name: interfaces
       when: interfaces_red
+
+    - name: Copiar workspace
+      copy:
+        src: /vagrant/workspace
+        dest: /home/{{ base_username }}
+        owner: "{{ base_username }}"
+        group: "{{ base_username }}"
+        mode: '0755'
+        remote_src: yes
+      when: copy_workspace
+
+    - name: Downloads
+      block:
+        - name: Crea directorio Downloads
+          file:
+            path: /home/{{ base_username }}/Downloads
+            owner: "{{ base_username }}"
+            group: "{{ base_username }}"
+            state: directory
+            mode: 0755
+
+        - name: Download software
+          get_url:
+            url: "{{ item }}"
+            dest: /home/{{ base_username }}/Downloads
+            owner: "{{ base_username }}"
+            group: "{{ base_username }}"
+            mode: 0755
+          loop: "{{ downloads_urls }}"
+      when: download_resources
 
     - name: Reiniciar
       reboot:
@@ -215,24 +264,7 @@
 
     
 
-    # - name: Ensure download directory
-    #   file:
-    #     path: /home/{{ base_username }}/Downloads
-    #     owner: "{{ base_username }}"
-    #     group: "{{ base_username }}"
-    #     state: directory
-    #     mode: 0755
-
-    # # Descarga Apache Tomcat y lo deja comprimido en Downloads
-    # - name: Download software
-    #   get_url:
-    #     url: "{{ item }}"
-    #     dest: /home/{{ base_username }}/Downloads
-    #     owner: "{{ base_username }}"
-    #     group: "{{ base_username }}"
-    #     mode: 0755
-    #   loop:
-    #     - https://dlcdn.apache.org/tomcat/tomcat-{{ tomcat_major_version }}/v{{tomcat_version}}/bin/apache-tomcat-{{tomcat_version}}.tar.gz
+    
 
     # # Instalación de mysql y mysql workbench como paquete. 
     # - name: Instalación de mysql
