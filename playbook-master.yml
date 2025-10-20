@@ -3,7 +3,6 @@
   hosts: all
   become: true
   vars:
-
     restart: no
 
     # USUARIO
@@ -17,9 +16,9 @@
     common_conf: yes 
     oh_my_zsh: no
     browsers: yes
-    java: yes
+    java: no # TODO: Correxir tarefa para definir java como default
     vsc: no
-    rdp: yes 
+    rdp: no 
     # == STS ==
     # Consultar versións: 
     # https://github.com/spring-projects/spring-tools/wiki/Previous-Versions
@@ -36,16 +35,7 @@
     downloads_urls:
       - https://download.jetbrains.com/idea/ideaIC-2025.2.3.tar.gz
       - https://dlcdn.apache.org/tomcat/tomcat-11/v11.0.13/bin/apache-tomcat-11.0.13.tar.gz
-      - https://adoptium.net/es/download?link=https%3A%2F%2Fgithub.com%2Fadoptium%2Ftemurin21-binaries%2Freleases%2Fdownload%2Fjdk-21.0.8%252B9%2FOpenJDK21U-jdk_x64_linux_hotspot_21.0.8_9.tar.gz&vendor=Adoptium
-      - https://adoptium.net/es/download?link=https%3A%2F%2Fgithub.com%2Fadoptium%2Ftemurin17-binaries%2Freleases%2Fdownload%2Fjdk-17.0.16%252B8%2FOpenJDK17U-jdk_x64_linux_hotspot_17.0.16_8.tar.gz&vendor=Adoptium
-      - https://github.com/ibmruntimes/semeru25-binaries/releases/download/jdk-25%2B36_openj9-0.55.0/ibm-semeru-open-jdk_x64_linux_25_36_openj9-0.55.0.tar.gz
-      - https://github.com/ibmruntimes/semeru21-binaries/releases/download/jdk-21.0.8%2B9_openj9-0.53.0/ibm-semeru-open-jdk_x64_linux_21.0.8_9_openj9-0.53.0.tar.gz
-      - https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.16%2B8_openj9-0.53.0/ibm-semeru-open-jdk_x64_linux_17.0.16_8_openj9-0.53.0.tar.gz
-      - https://download.oracle.com/graalvm/25/latest/graalvm-jdk-25_linux-x64_bin.tar.gz
-      - https://download.oracle.com/graalvm/21/latest/graalvm-jdk-21_linux-x64_bin.tar.gz
-      - https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-25.0.0/graalvm-community-jdk-25.0.0_linux-x64_bin.tar.gz
-      - https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-21.0.2/graalvm-community-jdk-21.0.2_linux-x64_bin.tar.gz
-      - https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-17.0.7/graalvm-community-jdk-17.0.7_linux-x64_bin.tar.gz
+      - https://download.java.net/openjdk/jdk17.0.0.1/ri/openjdk-17.0.0.1+2_linux-x64_bin.tar.gz
     # =========
 
     nodejs: no 
