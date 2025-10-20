@@ -3,17 +3,17 @@
 # =======================================================================
 # 
 # Xerais
-PROJECT_NAME="ansible"
+PROJECT_NAME="best-practices-rendimiento"
 NETWORK = "192.168.15"
 HASH_IPS = {}
-NUM_WORKERS = 2
+NUM_WORKERS = 0
 CREATE_NAT = true
 # 
 # MÁQUINA MASTER
 MAIN_BOX="pronoide/fedoragui"
-MAIN_VERSION="41"
-MAIN_SERVER_SUFFIX="-control"
-MEMORY_MAIN="6144"
+MAIN_VERSION="37"
+MAIN_SERVER_SUFFIX=""
+MEMORY_MAIN="8192"
 MAIN_CPU = 2
 MAIN_PLAYBOOK = "playbook-master.yml"
 # 
