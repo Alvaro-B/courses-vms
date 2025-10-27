@@ -1,6 +1,0 @@
----
-# vars file for jupyter_notebook
-shortcut_command: jupyter notebook
-shortcut_title: Jupyter Notebook
-shortcut_comment: Jupyter Notebook
-shortcut_icon: /usr/share/icons/jupyter.ico
