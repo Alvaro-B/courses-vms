@@ -3,5 +3,5 @@
     name: profile
   vars:
     profile_software_name: maven
-    profile_software_path: "{{ maven_base_path }}"
-    profile_software_version: "{{ maven_version }}"
+    profile_software_path: "{{ maven_base_path }}"
+    profile_software_version: "{{ maven_version }}"

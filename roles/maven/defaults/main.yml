@@ -1,5 +1,5 @@
 ---
 # defaults file for profile
-maven_version: 3.8.4
+maven_version: 3.9.11
 maven_java_option: openjdk
-maven_openjdk_version: 11 
+maven_openjdk_version: 21 

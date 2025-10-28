@@ -1,5 +1,5 @@
 ---
 - name: copy maven tar file to tmp folder
   get_url:
-    url: "{{ maven_mirror }}/maven-3/{{ maven_version }}/binaries/{{ maven_filename }}-bin.tar.gz"
+    url: "{{ maven_mirror }}/maven-3/{{ maven_version }}/binaries/{{ maven_filename }}-bin.tar.gz"
     dest: /tmp/{{ maven_filename }}.tar.gz
