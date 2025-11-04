@@ -16,13 +16,13 @@
     java_main_version: 21
 
     # Definir SW máquina
-    common_conf: no 
+    common_conf: yes 
     oh_my_zsh: no
-    browsers: no
+    browsers: yes
     java: no # TODO: Correxir tarefa para definir java como default
-    vsc: no
-    jupyter: no
-    rdp: no 
+    vsc: yes
+    jupyter: yes
+    rdp: yes 
     # == STS ==
     # Consultar versións: 
     # https://github.com/spring-projects/spring-tools/wiki/Previous-Versions
@@ -47,7 +47,7 @@
     # == Apache Hive ==
     # Ó instalarse Hive, automáticamente, instálase Hadoop
     # Para evitar configuracións erroneas, instalar Hadoop mediante o rol de Hive.
-    hive: yes
+    hive: no
     hive_version: 4.1.0
     hive_hadoop_v: 3.4.1
     hive_openjdk_version: 17
