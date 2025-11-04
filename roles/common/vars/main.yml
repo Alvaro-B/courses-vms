@@ -89,6 +89,15 @@ distros:
       - gedit
       - python3-pip
       - ImageMagick
+
+  Fedora42:
+    firewall_service: firewalld
+    ntp_service: chronyd
+    ntp_package: chrony
+    software:
+      - gedit
+      - python3-pip
+      - ImageMagick
       
 base_software:
   - "{{ distros[ansible_distribution + ansible_distribution_major_version].ntp_package }}"

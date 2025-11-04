@@ -3,15 +3,15 @@
 # =======================================================================
 # 
 # Xerais
-PROJECT_NAME="best-practices-rendimiento"
+PROJECT_NAME="spark"
 NETWORK = "192.168.15"
 HASH_IPS = {}
 NUM_WORKERS = 0
-CREATE_NAT = true
+CREATE_NAT = false
 # 
 # MÁQUINA MASTER
-MAIN_BOX="pronoide/fedoragui"
-MAIN_VERSION="37"
+MAIN_BOX="pronoide/centosgui"
+MAIN_VERSION="2025"
 MAIN_SERVER_SUFFIX=""
 MEMORY_MAIN="8192"
 MAIN_CPU = 2
@@ -23,9 +23,6 @@ WORKER_VERSION="41"
 WORKER_SERVER_SUFFIX="-minion"
 MEMORY_MINION="4096"
 MINION_PLAYBOOK = "playbook-minion.yml"
-# 
-# ANSIBLE MINIONS
-# ---
 
 # =======================================================================
 # FUNCIÓNS

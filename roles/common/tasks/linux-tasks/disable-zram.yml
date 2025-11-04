@@ -2,5 +2,3 @@
   dnf: 
     name: zram-generator-defaults
     state: absent
-  when:
-    - ansible_distribution == "Fedora" and disable_zram == true

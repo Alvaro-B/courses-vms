@@ -16,9 +16,6 @@
       register: default_runlevel
       changed_when: false
 
-    # Disable selinux and firewall. 
-    # Install common sw
-    # Enable pcsd and ntpd
     - import_tasks: linux-tasks/common.yml
 
     - import_tasks: linux-tasks/disable-lock-screen.yml
@@ -29,28 +26,36 @@
 
     - import_tasks: linux-tasks/users.yml
 
+    # =============== CentOS ============================
+    # ===================================================
     - import_tasks: linux-tasks/lang.yml
       when: ansible_distribution == 'CentOS'
 
     - import_tasks: linux-tasks/timezone.yml
       when: ansible_distribution == 'CentOS'
 
-    - import_tasks: linux-tasks/remove-keyring.yml
-      when: ansible_distribution == 'Fedora'
-
     - import_tasks: linux-tasks/install-desktop-environment.yml
       when: 
         - ansible_distribution == 'CentOS'
         - default_runlevel.stdout == 'graphical.target'
+    # ===================================================
+
+    # =============== Fedora ============================
+    # ===================================================
+    - import_tasks: linux-tasks/remove-keyring.yml
+      when: ansible_distribution == 'Fedora'
 
     - import_tasks: linux-tasks/disable-zram.yml
+      when:
+        - ansible_distribution == "Fedora"
+        - disable_zram == true
 
     - import_tasks: linux-tasks/locale-and-keyboard-settings.yml
       when: ansible_distribution == 'Fedora' and ansible_distribution_major_version == '37'
 
     - import_tasks: linux-tasks/disable-autorun-aplications-on-login.yml
       when: ansible_distribution == 'Fedora' 
-
+    # ===================================================
   when:
     - ansible_windows_domain is undefined
 

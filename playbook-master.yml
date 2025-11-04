@@ -12,13 +12,17 @@
     # Extra software
     extras: []
 
+    # Versións xenerais
+    java_main_version: 21
+
     # Definir SW máquina
     common_conf: yes 
     oh_my_zsh: no
     browsers: yes
     java: no # TODO: Correxir tarefa para definir java como default
-    vsc: no
-    rdp: no 
+    vsc: yes
+    jupyter: yes
+    rdp: yes 
     # == STS ==
     # Consultar versións: 
     # https://github.com/spring-projects/spring-tools/wiki/Previous-Versions
@@ -27,34 +31,55 @@
     sts_version: '4.32.0.RELEASE'
     sts_distribution: 'e4.37'
     sts_openjdk_version: "{{ java_main_version }}"
-    # =========
-    interfaces_red: no
-    copy_workspace: no
-    # == Downloads ==
-    download_resources: yes
-    downloads_urls:
-      - https://download.jetbrains.com/idea/ideaIC-2025.2.3.tar.gz
-      - https://dlcdn.apache.org/tomcat/tomcat-11/v11.0.13/bin/apache-tomcat-11.0.13.tar.gz
-      - https://download.java.net/openjdk/jdk17.0.0.1/ri/openjdk-17.0.0.1+2_linux-x64_bin.tar.gz
-    # =========
-
-    nodejs: no 
-    docker: no
-    eclipse: no
-    pycharm: no
-    jupyter: no
+    # ============================================
+    # 
+    # == Maven ==
     maven: no
+    maven_v: 3.9.11
+    maven_java_version: "{{ java_main_version }}"
+    # ===========================================
+    # 
+    # == Docker ==
+    docker: no
+    docker_compose_version: v2.39.4
+    # ===========================================
+    # 
+    # == Apache Hive ==
+    # Ó instalarse Hive, automáticamente, instálase Hadoop
+    # Para evitar configuracións erroneas, instalar Hadoop mediante o rol de Hive.
+    hive: no
+    hive_version: 4.1.0
+    hive_hadoop_v: 3.4.1
+    hive_openjdk_version: 17
+
+    # ===========================================
+    interfaces_red: no
+    copy_workspace: yes
+    # == Downloads ==
+    download_resources: no
+    downloads_urls:
+      - https://artifacts.elastic.co/downloads/kibana/kibana-8.13.0-linux-x86_64.tar.gz
+      - https://artifacts.elastic.co/downloads/kibana/kibana-8.13.0-x86_64.rpm
+      - https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.13.0-linux-x86_64.tar.gz
+      - https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.13.0-x86_64.rpm
+      - https://artifacts.elastic.co/downloads/logstash/logstash-8.13.0-linux-x86_64.tar.gz
+      - https://artifacts.elastic.co/downloads/logstash/logstash-8.13.0-x86_64.rpm
+      - https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-8.13.0-linux-x86_64.tar.gz
+      - https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-8.13.0-x86_64.rpm
+      - https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-8.13.0-linux-x86_64.tar.gz
+      - https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-8.13.0-x86_64.rpm
+    # ============================================================================================
+    #
+    
+    nodejs: no     
+    eclipse: no
+    pycharm: no    
     postman: no
 
-    # Versións xenerais
-    java_main_version: 17
-
-    docker_compose_version: v2.39.4
     eclipse_rel: '2025-03'
     eclipse_v: 'R'
     node_version: 22
     pycharm_v: '2025.2.2'
-    maven_v: 3.9.11
     tomcat_version: 9.0.84
     tomcat_major_version: 9
 
@@ -120,6 +145,16 @@
         name: visual_studio_code
       when: vsc
 
+    - name: Rol jupyter notebook
+      include_role:
+        name: jupyter_notebook
+      vars:
+        jupyter_notebook_owner: "{{ base_username }}"
+        jupyter_notebook_r: false
+        jupyter_notebook_pyspark: true
+        jupyter_notebook_pyspark_auto: false
+      when: jupyter
+
     # Instalación de RDP 
     # Conectarse á máquina a través do porto 3389
     # Precisa reiniciar ou iniciar sesión unha vez para que funcione.
@@ -131,7 +166,7 @@
         rdp_users: []
       when: rdp
 
-    - name: Instalación de Spring Tool Suite
+    - name: Instalar Spring Tool Suite
       include_role:
         name: spring_tool_suite
       vars:
@@ -142,6 +177,35 @@
         spring_tool_suite_java_option: openjdk
         spring_tool_suite_openjdk_version: "{{ sts_openjdk_version }}"
       when: spring
+
+    - name: Instalar Maven
+      include_role:
+        name: maven
+      vars:
+        maven_version: "{{ maven_v }}" 
+        maven_java_option: openjdk
+        maven_openjdk_version: "{{ maven_java_version }}"
+      when: maven
+
+    - name: Instalar Docker
+      include_role:
+        name: docker
+      vars:
+        docker_authorized_user: "{{ base_username }}"
+        docker_compose_install: true
+        docker_compose_version: "{{ docker_compose_version }}"
+      when: docker
+
+    - name: Instalar Apache Hive
+      include_role:
+        name: apache_hive
+      vars:
+        apache_hive_version: "{{ hive_version }}"
+        apache_hive_owner: "{{ base_username }}"
+        apache_hive_hadoop_version: "{{ hive_hadoop_v }}"
+        apache_hive_java_option: openjdk
+        apache_hive_openjdk_version: "{{ hive_openjdk_version }}"
+      when: hive
 
     - name: Rol Interfaces
       include_role:
@@ -178,6 +242,15 @@
           loop: "{{ downloads_urls }}"
       when: download_resources
 
+    - name: Add elasticsearch repo
+      yum_repository:
+        name: elasticsearch
+        description: Repository for Elasticsearch
+        baseurl: "https://artifacts.elastic.co/packages/8.x/yum"
+        gpgcheck: yes
+        gpgkey: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+        enabled: yes
+
     - name: Reiniciar
       reboot:
       when: restart
@@ -189,15 +262,6 @@
       vars:
         nodejs_version: "{{ node_version }}"
       when: nodejs
-
-    - name: Instalar Docker
-      include_role:
-        name: docker
-      vars:
-        docker_authorized_user: "{{ base_username }}"
-        docker_compose_install: true
-        docker_compose_version: "{{ docker_compose_version }}"
-      when: docker
 
     # Descarga e instala el eclipse para cualquier versión. Solo necesitamos indicar la release que queremos.
     - name: Instalación de Eclipse
@@ -224,25 +288,6 @@
         pycharm_owner: "{{ base_username }}"
       when: pycharm
 
-    - name: Rol jupyter notebook
-      include_role:
-        name: jupyter_notebook
-      vars:
-        jupyter_notebook_owner: "{{ base_username }}"
-        jupyter_notebook_r: false
-        jupyter_notebook_pyspark: true
-        jupyter_notebook_pyspark_auto: false
-      when: jupyter
-
-    - name: Instalación de maven
-      include_role:
-        name: maven
-      vars:
-        maven_version: "{{ maven_v }}" 
-        maven_java_option: openjdk
-        maven_openjdk_version: "{{ java_main_version }}"
-      when: maven
-
     - name: Instalación de Postman
       include_role:
         name: postman
@@ -251,25 +296,31 @@
         postman_owner: "{{ base_username }}"
       when: postman
 
+    # # Instalación de Hadoop
+    # - name: Instalación de Hadoop
+    #   include_role:
+    #     name: hadoop
+    #   vars:
+    #     # Las versiones de Hadoop se van deprecando y eliminan las descargas anteriores. 
+    #     # Yendo a la URL: http://apache.rediris.es/hadoop/common/ está la lista de versiones descargables.
+    #     hadoop_version: 3.3.2
+    #     hadoop_owner: "{{ base_username }}"
+    #     hadoop_java_option: openjdk
+    #     hadoop_openjdk_version: 1.8.0
 
+    # Posee dependencia con Hadoop. Al instalarse Hive automáticamente se instala hadoop para registrarse.
+    # Para evitar configuraciones erroneas, es mejor instalar solo Hive y así ya se instala la versión correcta de Hadoop.
+    # WARNING -> Todavía no es compatible con Java 11 y no se puede aislar la versión de java con hive hasta la versión 3.2.X
+    # - name: Instalación de Apache Hive
+    #   include_role:
+    #     name: apache_hive
+    #   vars:
+    #     apache_hive_version: 3.1.2
+    #     apache_hive_owner: "{{ base_username }}"
+    #     apache_hive_hadoop_version: 3.3.0
+    #     apache_hive_java_option: openjdk
+    #     apache_hive_openjdk_version: 1.8.0
     
-
-    
-
-    # # Instalación de mysql y mysql workbench como paquete. 
-    # - name: Instalación de mysql
-    #  include_role:
-    #    name: mysql
-    #  vars:
-    #    # Ignorado en centos7, ya que solo hay hasta la 8.0.22-1
-    #    mysql_workbench_version: 8.0.33
-    #    # opciones probadas 5.7 y 8.0
-    #    mysql_version: 8.0
-    #    mysql_username: "{{ base_username }}"
-    #    mysql_password: "{{ base_username }}"
-    #    mysql_dockerized: true
-    #    mysql_native_shell_client: true
-    #    mysql_client: "dbeaver"
 
    
     

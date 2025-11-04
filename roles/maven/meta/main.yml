@@ -55,7 +55,7 @@ galaxy_info:
 dependencies: 
   - src: java
     vars:
-      java_option: "{{ maven_java_option }}"
+      java_option: "{{ maven_java_option }}"
       java_openjdk_version: "{{ maven_openjdk_version }}"
       java_set_default: false
   # List your role dependencies here, one per line. Be sure to remove the '[]' above,
