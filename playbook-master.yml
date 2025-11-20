@@ -16,13 +16,13 @@
     java_main_version: 21
 
     # Definir SW máquina
-    common_conf: yes 
+    common_conf: no 
     oh_my_zsh: no
-    browsers: yes
+    browsers: no
     java: no # TODO: Correxir tarefa para definir java como default
-    vsc: yes
-    jupyter: yes
-    rdp: yes 
+    vsc: no
+    jupyter: no
+    rdp: no 
     # == STS ==
     # Consultar versións: 
     # https://github.com/spring-projects/spring-tools/wiki/Previous-Versions
@@ -51,23 +51,19 @@
     hive_version: 4.1.0
     hive_hadoop_v: 3.4.1
     hive_openjdk_version: 17
-
     # ===========================================
+    # 
+    # == Anaconda ==
+    anaconda: yes
+    anaconda_v: 2025.06-0
+    anaconda_mv: 3
+    # ===========================================
+    # 
     interfaces_red: no
-    copy_workspace: yes
+    copy_workspace: no
     # == Downloads ==
     download_resources: no
-    downloads_urls:
-      - https://artifacts.elastic.co/downloads/kibana/kibana-8.13.0-linux-x86_64.tar.gz
-      - https://artifacts.elastic.co/downloads/kibana/kibana-8.13.0-x86_64.rpm
-      - https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.13.0-linux-x86_64.tar.gz
-      - https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.13.0-x86_64.rpm
-      - https://artifacts.elastic.co/downloads/logstash/logstash-8.13.0-linux-x86_64.tar.gz
-      - https://artifacts.elastic.co/downloads/logstash/logstash-8.13.0-x86_64.rpm
-      - https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-8.13.0-linux-x86_64.tar.gz
-      - https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-8.13.0-x86_64.rpm
-      - https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-8.13.0-linux-x86_64.tar.gz
-      - https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-8.13.0-x86_64.rpm
+    downloads_urls: []
     # ============================================================================================
     #
     
@@ -207,6 +203,16 @@
         apache_hive_openjdk_version: "{{ hive_openjdk_version }}"
       when: hive
 
+    - name: Install anaconda
+      include_role:
+        name: anaconda
+      vars:
+        anaconda_version: "{{ anaconda_v }}"
+        anaconda_major_version: "{{ anaconda_mv }}"
+        anaconda_owner: "{{ base_username }}"
+        anaconda_group: "{{ base_username }}"
+      when: anaconda
+
     - name: Rol Interfaces
       include_role:
         name: interfaces
@@ -242,14 +248,14 @@
           loop: "{{ downloads_urls }}"
       when: download_resources
 
-    - name: Add elasticsearch repo
-      yum_repository:
-        name: elasticsearch
-        description: Repository for Elasticsearch
-        baseurl: "https://artifacts.elastic.co/packages/8.x/yum"
-        gpgcheck: yes
-        gpgkey: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
-        enabled: yes
+    # - name: Add elasticsearch repo
+    #   yum_repository:
+    #     name: elasticsearch
+    #     description: Repository for Elasticsearch
+    #     baseurl: "https://artifacts.elastic.co/packages/8.x/yum"
+    #     gpgcheck: yes
+    #     gpgkey: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+    #     enabled: yes
 
     - name: Reiniciar
       reboot:
@@ -296,30 +302,7 @@
         postman_owner: "{{ base_username }}"
       when: postman
 
-    # # Instalación de Hadoop
-    # - name: Instalación de Hadoop
-    #   include_role:
-    #     name: hadoop
-    #   vars:
-    #     # Las versiones de Hadoop se van deprecando y eliminan las descargas anteriores. 
-    #     # Yendo a la URL: http://apache.rediris.es/hadoop/common/ está la lista de versiones descargables.
-    #     hadoop_version: 3.3.2
-    #     hadoop_owner: "{{ base_username }}"
-    #     hadoop_java_option: openjdk
-    #     hadoop_openjdk_version: 1.8.0
-
-    # Posee dependencia con Hadoop. Al instalarse Hive automáticamente se instala hadoop para registrarse.
-    # Para evitar configuraciones erroneas, es mejor instalar solo Hive y así ya se instala la versión correcta de Hadoop.
-    # WARNING -> Todavía no es compatible con Java 11 y no se puede aislar la versión de java con hive hasta la versión 3.2.X
-    # - name: Instalación de Apache Hive
-    #   include_role:
-    #     name: apache_hive
-    #   vars:
-    #     apache_hive_version: 3.1.2
-    #     apache_hive_owner: "{{ base_username }}"
-    #     apache_hive_hadoop_version: 3.3.0
-    #     apache_hive_java_option: openjdk
-    #     apache_hive_openjdk_version: 1.8.0
+   
     
 
    
